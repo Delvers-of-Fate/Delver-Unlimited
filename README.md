@@ -11,6 +11,9 @@ Visit the [wiki](https://github.com/Council-Of-The-Delverers/Delver-Unlimited/wi
 - Override the files inside `delver.jar`
 - (Optional) override the files inside `DelvEdit.jar`
 
+# Compiling
+- Make sure you have the `delver.jar` binary file set as a libary
+
 # Issues
 ### Runtime Error (Windows)
 Since the game uses Launch4j to launch an embedded JRE so that users don't have to intall Java themselves, it seems to not like modified files since Update 14.
