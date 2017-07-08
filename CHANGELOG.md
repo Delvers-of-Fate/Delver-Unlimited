@@ -6,13 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
-- Currency! Press `U` to access your money!
-- Platinum, Copper and Silver currency
 - Support for DelvEdit!
 - The fade in the main menu is disabled if the user is skipping the intro videos
 - Load strait into a save file using `--save=<int>`, must be used with `--skipintro`
-- Sprinting! Hold `left shift` in order to move faster
-- Jumping! Press `space` in order to jump
 
 ### Changed
 - Major debug overlay overhaul
