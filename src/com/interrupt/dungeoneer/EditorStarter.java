@@ -130,8 +130,6 @@ public class EditorStarter
                 System.out.println("--borderless           Enable borderless mode.");
                 System.out.println("--msaa=<int>           Number of msaa samples.");
                 System.out.println("--steam                Disable Steamworks addon.");
-                System.out.println("--drawdebugboxes       Draws debug boxes?");
-                System.out.println("--skipintro            Skips the intro videos.");
                 System.out.println("--help                 Displays this message.");
                 System.out.println();
 
@@ -141,11 +139,10 @@ public class EditorStarter
             }
         }
 
-        if(com.interrupt.dungeoneer.game.Game.isDebugMode) {
-            for (String theArg : theArgs) {
-                System.out.println("Arg: " + theArg);
-            }
+        for (String theArg : theArgs) {
+            System.out.println("Arg: " + theArg);
         }
+
     }
 
 }

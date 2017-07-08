@@ -155,7 +155,7 @@ public class DesktopStarter
                 System.out.println("--steam                Disable Steamworks addon.");
                 System.out.println("--drawdebugboxes       Draws debug boxes?");
                 System.out.println("--skipintro            Skips the intro videos.");
-                System.out.println("--save=<int>           Skips the main menu and goes strait to the selected save file.");
+                System.out.println("--save=<int>           Skips the main menu and goes strait to the selected save file, must be used with the above.");
                 System.out.println("--help                 Displays this message.");
                 System.out.println();
 
