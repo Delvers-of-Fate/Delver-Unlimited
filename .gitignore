@@ -1,0 +1,9 @@
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
+run
+
+Delver.lnk
