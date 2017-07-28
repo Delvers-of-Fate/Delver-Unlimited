@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Support for DelvEdit!
 - The fade in the main menu is disabled if the user is skipping the intro videos
 - Load strait into a save file using `--save=<int>`, must be used with `--skipintro`
+- You can now un-select a save in the main menu!
 
 ### Changed
 - Major debug overlay overhaul
@@ -18,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - A lot of minor cleanup!
 
 ### Fixed
-- Fixed exiting the game screen and erasing save files for people with low resolutions.
+- Fixed exiting the game screen and erasing save files for people with low resolutions
 
 ## [1.2.0] - 2017-06-08
 ### Added

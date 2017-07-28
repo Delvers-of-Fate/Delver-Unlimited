@@ -57,6 +57,7 @@ public class MainMenuScreen
     float fadeFactor = 1.0F;
     private int[] saveFiles = {0, 1, 2};
     private boolean escapePressed = false;
+    boolean isSelected = false;
 
     public MainMenuScreen()
     {
@@ -321,7 +322,9 @@ public class MainMenuScreen
         if (Gdx.input.isKeyPressed(Input.Keys.O)) {
             GameApplication.SetScreen(new OptionsScreen());
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            GameApplication.SetScreen(new LoadingScreen(saveGames[0] == null ? "CREATING DUNGEON" : "LOADING", 0));
+            if(selectedSave != null) {
+                GameApplication.SetScreen(new LoadingScreen(saveGames[selectedSave] == null ? "CREATING DUNGEON" : "LOADING", selectedSave));
+            }
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             // fix for instant close
             if(escapePressed) {
@@ -347,6 +350,13 @@ public class MainMenuScreen
 
     private void selectSaveButtonEvent(int saveLoc, Table selected)
     {
+        isSelected = false;
+
+        if(this.selectedSaveTable == selected) {
+            selected = null;
+            isSelected = true;
+        }
+
         this.selectedSaveTable = selected;
         for (int i = 0; i < this.saveSlotUi.size; i++) {
             this.saveSlotUi.get(i).setColor(Color.GRAY);
@@ -354,14 +364,20 @@ public class MainMenuScreen
         if (selected != null) {
             selected.setColor(Color.WHITE);
         }
-        if (saveGames[saveLoc] != this.errorPlayer) {
+        if (saveGames[saveLoc] != this.errorPlayer && !isSelected) {
             this.playButton.setVisible(true);
         } else {
             this.playButton.setVisible(false);
         }
         selectedSave = saveLoc;
 
-        this.deleteButton.setVisible((saveGames[selectedSave] != null) || (progress[selectedSave] != null));
+        if(saveGames[selectedSave] != null && !isSelected) {
+            this.deleteButton.setVisible(true);
+        } else if (progress[selectedSave] != null && !isSelected) {
+            this.deleteButton.setVisible(true);
+        } else {
+            this.deleteButton.setVisible(false);
+        }
 
         if (this.gamepadSelectionIndex != null) {
             this.gamepadSelectionIndex = 3;
@@ -372,6 +388,7 @@ public class MainMenuScreen
         if (!this.buttonOrder.contains(this.deleteButton, true)) {
             this.buttonOrder.add(this.deleteButton);
         }
+
     }
 
     private void playButtonEvent()
