@@ -11,6 +11,8 @@ Visit the [wiki](https://github.com/Council-Of-The-Delverers/Delver-Unlimited/wi
 - Override the files inside `delver.jar`
 - (Optional) override the files inside `DelvEdit.jar`
 
+Make sure you have Java 8 + JavaFX installed!
+
 [YouTube tutorial & showcase](https://youtu.be/Q8BZuU8ka9g)
 
 # Compiling
