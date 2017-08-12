@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Improved menu bar and added exit
 
 ### Changed
+- Now targeting Java 8, and re-enabled creating `save` dir if not found
 
 ## [1.3.0] - 2017-07-28
 ### Added
