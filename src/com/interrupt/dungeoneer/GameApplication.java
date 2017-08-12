@@ -8,7 +8,7 @@ import com.interrupt.dungeoneer.entities.Stairs;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.screens.*;
 import com.interrupt.managers.StringManager;
-import net.hawaiibeach.delverunlimited.Config;
+import net.cotd.delverunlimited.Config;
 
 public class GameApplication
         extends Game

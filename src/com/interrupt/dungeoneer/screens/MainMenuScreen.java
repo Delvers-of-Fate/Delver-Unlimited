@@ -28,7 +28,7 @@ import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Progression;
 import com.interrupt.managers.StringManager;
-import net.hawaiibeach.delverunlimited.Config;
+import net.cotd.delverunlimited.Config;
 
 import java.text.MessageFormat;
 

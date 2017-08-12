@@ -6,7 +6,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.steamapi.SteamDesktopApi;
-import net.hawaiibeach.delverunlimited.Config;
+import net.cotd.delverunlimited.Config;
 
 import java.io.File;
 
@@ -28,9 +28,9 @@ public class DesktopStarter
         checkArgs(args);
 
         if(Config.isRelease) {
-            System.out.println("Running Delver-Unlimited v" + Config.OfflineVer + " by Hawaii_Beach");
+            System.out.println("Running Delver-Unlimited v" + Config.OfflineVer + " by the CotD team");
         } else {
-            System.out.println("Running Delver-Unlimited v" + Config.OfflineVer + " NON-RELEASE by Hawaii_Beach");
+            System.out.println("Running Delver-Unlimited v" + Config.OfflineVer + " NON-RELEASE by the CotD team");
             System.out.println("Test build given out by the developer, and should not be redistributed!");
         }
 

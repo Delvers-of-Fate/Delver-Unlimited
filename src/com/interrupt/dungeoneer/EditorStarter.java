@@ -6,7 +6,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.steamapi.SteamEditorApi;
-import net.hawaiibeach.delverunlimited.Config;
+import net.cotd.delverunlimited.Config;
 
 import java.io.File;
 
