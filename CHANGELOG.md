@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - New native file chooser for DelvEdit
+- Improved menu bar and added exit
 
 ## [1.3.0] - 2017-07-28
 ### Added

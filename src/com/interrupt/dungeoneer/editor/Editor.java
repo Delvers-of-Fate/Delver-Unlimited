@@ -77,6 +77,13 @@ public class Editor {
                 Editor.this.editorFrame.flattenCeiling();
             }
         };
+        /* D-U */
+        this.exitAction = new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                Gdx.app.log("DelvEdit", "Bye!");
+                Gdx.app.exit();
+            }
+        };
         this.saveAction = new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 if(Editor.this.currentFileName != null && Editor.this.currentDirectory != null) {
@@ -303,13 +310,6 @@ public class Editor {
         this.rotateMode = new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 Editor.this.editorFrame.setMoveMode(MoveMode.ROTATE);
-            }
-        };
-
-        /* D-U */
-        this.exitAction = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Gdx.app.exit();
             }
         };
     }
