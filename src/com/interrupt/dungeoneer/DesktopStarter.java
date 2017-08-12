@@ -1,6 +1,7 @@
 package com.interrupt.dungeoneer;
 
 import com.badlogic.gdx.Files;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
@@ -9,6 +10,9 @@ import com.interrupt.dungeoneer.steamapi.SteamDesktopApi;
 import net.cotd.delverunlimited.Config;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class DesktopStarter
 {
@@ -36,18 +40,19 @@ public class DesktopStarter
 
         System.out.println("This is a modded version of Delver! Do NOT report bugs to the developers until you're sure that it isn't caused by the mod!");
 
-        /* Requires Java 8
         // does folder exist?
         Path settingsDir = Paths.get("save");
         if(!java.nio.file.Files.isDirectory(settingsDir)) {
+            System.out.println("Settings: directory not found!");
             try {
                 java.nio.file.Files.createDirectories(settingsDir);
-                System.out.println("[WARNING] Settings directory not found, created!");
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                System.out.println("Settings: directory created!");
             }
         }
-        */
+
 
         Graphics.DisplayMode defaultMode = LwjglApplicationConfiguration.getDesktopDisplayMode();
 
