@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
-- New native file chooser for DelvEdit
+- New [JavaFX FileChooser](https://docs.oracle.com/javase/8/javafx/api/javafx/stage/FileChooser.html) for DelvEdit
 - Improved menu bar and added exit (DelvEdit)
 - Implemented a Mod Manager system. Manage mods in Options > Mods!
 
