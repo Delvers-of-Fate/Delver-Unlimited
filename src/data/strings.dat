@@ -2628,5 +2628,35 @@
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "WWW",
         "comment": ""
+    },
+    "screens.ModManagerScreen.name": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Name: ",
+        "comment": ""
+    },
+    "screens.ModManagerScreen.author": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Author: ",
+        "comment": ""
+    },
+    "screens.ModManagerScreen.description": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Description: ",
+        "comment": ""
+    },
+    "screens.ModManagerScreen.version": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Version: ",
+        "comment": ""
+    },
+    "screens.ModManagerScreen.modState": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Mod State: ",
+        "comment": ""
+    },
+    "screens.ModManagerScreen.backButton": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Back",
+        "comment": ""
     }
 }

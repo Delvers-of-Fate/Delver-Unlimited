@@ -35,6 +35,7 @@ public class ModManagerScreen extends BaseScreen {
     private TextButton enableButton;
     private TextButton disableButton;
     private TextButton wwwButton;
+    private TextButton backButton;
 
     public ModManagerScreen() {
         this.screenName = "ConfirmExitScreen";
@@ -97,20 +98,30 @@ public class ModManagerScreen extends BaseScreen {
             }
         });
 
+        backButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get(baseString + "backButton")), this.skin);
+        backButton.setWidth(200.0F);
+        backButton.setHeight(50.0F);
+        backButton.setColor(Colors.EXPLOSION);
+        backButton.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                GameApplication.SetScreen(new OptionsScreen());
+            }
+        });
+
         NinePatchDrawable fileSelectBg = new NinePatchDrawable(new NinePatch(this.skin.getRegion("save-select"), 1, 1, 1, 5));
         for (Mod mod : Game.modManager.modList) {
             final Table t = new Table(this.skin);
-            t.add("Name: " + mod.name);
+            t.add(StringManager.get(baseString + "name") + mod.name);
             t.setBackground(fileSelectBg);
             t.center();
             t.row();
 
             Table t2 = new Table(this.skin);
-            t2.add("Author: " + mod.author);
+            t2.add(StringManager.get(baseString + "author") + mod.author);
             t2.row();
-            t2.add("Description: " + mod.description);
+            t2.add(StringManager.get(baseString + "description") + mod.description);
             t2.row();
-            t2.add("Version: " + mod.version + " | Mod State: " + mod.modState);
+            t2.add(StringManager.get(baseString + "version") + mod.version + " | " + StringManager.get(baseString + "modState") + mod.modState);
             t2.pack();
 
             t.add(t2);
@@ -137,9 +148,11 @@ public class ModManagerScreen extends BaseScreen {
         buttonTable.add(enableButton);
         buttonTable.add(disableButton);
         buttonTable.add(wwwButton);
+        buttonTable.add(backButton);
         buttonTable.getCell(enableButton).padRight(4.0F);
         buttonTable.getCell(disableButton).padRight(4.0F);
         buttonTable.getCell(wwwButton).padRight(4.0F);
+        buttonTable.getCell(backButton).padRight(4F);
 
         this.fullTable.add(buttonTable);
        // this.fullTable.getCell(header).align(1).colspan(3).padBottom(8.0F);
@@ -165,15 +178,15 @@ public class ModManagerScreen extends BaseScreen {
                     this.enableButton.setVisible(true);
                     break;
             }
-            if(mod.url != null || mod.url.isEmpty()) {
+            if (!selectedMod.url.trim().isEmpty()) {
                 this.wwwButton.setVisible(true);
             } else {
                 this.wwwButton.setVisible(false);
             }
-        }
 
-        if (table != null) {
-            table.setColor(Color.WHITE);
+            if (table != null) {
+                table.setColor(Color.WHITE);
+            }
         }
     }
 

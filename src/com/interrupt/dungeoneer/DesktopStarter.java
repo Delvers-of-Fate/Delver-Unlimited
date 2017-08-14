@@ -53,7 +53,6 @@ public class DesktopStarter
             }
         }
 
-
         Graphics.DisplayMode defaultMode = LwjglApplicationConfiguration.getDesktopDisplayMode();
 
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
