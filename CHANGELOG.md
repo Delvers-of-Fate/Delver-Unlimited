@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - New native file chooser for DelvEdit
-- Improved menu bar and added exit
+- Improved menu bar and added exit (DelvEdit)
 - Implemented a Mod Manager system. Manage mods in Options > Mods!
 
 ### Changed
