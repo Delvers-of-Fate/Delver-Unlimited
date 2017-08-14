@@ -28,16 +28,28 @@ public class ModManager {
     public ModManager() {
         this.modsFound.add(".");
 
-        File[] directories = new File("mods").listFiles(File::isDirectory);
-        assert directories != null;
-        for (File modFolder : directories) {
-            addMod(modFolder);
+        if(new File("mods").exists()) { // does mods folder exist
+            File[] directories = new File("mods").listFiles(File::isDirectory);
+            for (File modFolder : directories) {
+                try {
+                    if (Files.newDirectoryStream(Paths.get(modFolder.toString())).iterator().hasNext()) { // is the mod folder empty?
+                        addMod(modFolder);
+                    } else {
+                        Gdx.app.log("ModManager", modFolder.toString() + " was empty!");
+                    }
+                } catch (Exception ex) {
+                    Gdx.app.error("ModManager", ex.getMessage());
+                }
+            }
+        } else {
+            Gdx.app.log("ModManager", "Couldn't find a /mods folder");
         }
 
         for (String mod : SteamApi.api.getWorkshopFolders()) {
             addMod(new File(mod));
         }
 
+        // final calls
         for (Mod mod : modList) {
             if(mod.modState == Mod.ModState.Enabled) {
                 this.modsFound.add(mod.modPath);
@@ -53,6 +65,15 @@ public class ModManager {
         String modFile = null;
 
         theFile = modFolder.toString() + File.separator + "mod.json";
+        File modFileF = new File(theFile = modFolder.toString() + File.separator + "mod.json");
+
+        /* DOES MOD.JSON EXIST */
+        if(!modFileF.exists() && !modFileF.isDirectory()) {
+            Gdx.app.log("ModManager", modFolder.toString() + " did not have a mod.json and will not load! Notify the developer of the mod to add support for Delver-Unlimited!");
+            return;
+        }
+
+        Gdx.app.log("ModManager.addMod", modFolder.getAbsolutePath());
 
         theMod = Game.fromJson(Mod.class, new FileHandle(theFile));
         theMod.modPath = modFolder.toString();

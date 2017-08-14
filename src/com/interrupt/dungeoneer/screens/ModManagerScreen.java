@@ -165,8 +165,10 @@ public class ModManagerScreen extends BaseScreen {
                     this.enableButton.setVisible(true);
                     break;
             }
-            if(mod.url != null) {
+            if(mod.url != null || mod.url.isEmpty()) {
                 this.wwwButton.setVisible(true);
+            } else {
+                this.wwwButton.setVisible(false);
             }
         }
 
