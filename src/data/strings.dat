@@ -2608,5 +2608,25 @@
         "class":"com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName":"Are you sure that you want to close the game?",
         "comment":""
+    },
+    "screens.OptionsScreen.modBtn":{
+        "class":"com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName":"Mods",
+        "comment":""
+    },
+    "screens.ModManagerScreen.enableButton":{
+        "class":"com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName":"Enable",
+        "comment":""
+    },
+    "screens.ModManagerScreen.disableButton":{
+        "class":"com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName":"Disable",
+        "comment":""
+    },
+    "screens.ModManagerScreen.wwwButton": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "WWW",
+        "comment": ""
     }
 }

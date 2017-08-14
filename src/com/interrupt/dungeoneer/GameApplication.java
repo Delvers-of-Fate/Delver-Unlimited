@@ -50,7 +50,6 @@ public class GameApplication
                 setScreen(new MainMenuScreen());
             }
 
-
         } else {
             setScreen(new IntroScreen());
         }

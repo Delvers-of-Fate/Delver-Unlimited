@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - New native file chooser for DelvEdit
 - Improved menu bar and added exit
+- Implemented a Mod Manager system. Manage mods in Options > Mods!
 
 ### Changed
 - Now targeting Java 8, and re-enabled creating `save` dir if not found
