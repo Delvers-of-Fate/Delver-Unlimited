@@ -22,4 +22,4 @@ Make sure you have Java 8 + JavaFX installed!
 ### Runtime Error (Windows)
 Since the game uses Launch4j to launch an embedded JRE so that users don't have to intall Java themselves, it seems to not like modified files since Update 14.
 
-Download [Delver-Launcher](https://www.dropbox.com/s/sdvxfnq3luoplru/Delver-Launcher%20v1.0.0.exe?dl=1) and replace `Delver.exe` with the file you just downloaded.
+Download [Delver-Launcher](https://github.com/Council-of-the-Delverers/Delver-Launcher/releases) and replace `Delver.exe` with the file you just downloaded.
