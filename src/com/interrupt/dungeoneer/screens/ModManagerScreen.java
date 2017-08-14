@@ -199,7 +199,7 @@ public class ModManagerScreen extends BaseScreen {
         String modFile = Game.toJson(newMod, Mod.class);
 
         try {
-            Files.write(Paths.get(newMod.modPath + File.separator + "mod.dat"), modFile.getBytes());
+            Files.write(Paths.get(newMod.modPath + File.separator + "mod.json"), modFile.getBytes());
         } catch (Exception ex) {
             Gdx.app.error("ModManager", ex.getMessage());
         }
@@ -214,7 +214,7 @@ public class ModManagerScreen extends BaseScreen {
         String modFile = Game.toJson(newMod, Mod.class);
 
         try {
-            Files.write(Paths.get(newMod.modPath + File.separator + "mod.dat"), modFile.getBytes());
+            Files.write(Paths.get(newMod.modPath + File.separator + "mod.json"), modFile.getBytes());
         } catch (Exception ex) {
             Gdx.app.error("ModManager", ex.getMessage());
         }

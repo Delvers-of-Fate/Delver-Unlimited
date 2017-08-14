@@ -16,7 +16,6 @@ import net.cotd.delverunlimited.helper.Mod;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -35,7 +34,6 @@ public class ModManager {
             addMod(modFolder);
         }
 
-        // TODO
         for (String mod : SteamApi.api.getWorkshopFolders()) {
             addMod(new File(mod));
         }
@@ -46,7 +44,6 @@ public class ModManager {
             }
         }
 
-       // this.modsFound.addAll(SteamApi.api.getWorkshopFolders());
         this.loadExcludesList();
     }
 
@@ -55,7 +52,7 @@ public class ModManager {
         Mod theMod = null;
         String modFile = null;
 
-        theFile = modFolder.toString() + File.separator + "mod.dat";
+        theFile = modFolder.toString() + File.separator + "mod.json";
 
         theMod = Game.fromJson(Mod.class, new FileHandle(theFile));
         theMod.modPath = modFolder.toString();
@@ -65,7 +62,6 @@ public class ModManager {
         }
 
         modList.add(theMod);
-
         modFile = Game.toJson(theMod, Mod.class);
 
         try {
