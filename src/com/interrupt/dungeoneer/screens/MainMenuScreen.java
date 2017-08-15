@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.Art;
 import com.interrupt.dungeoneer.Audio;
@@ -94,6 +95,8 @@ public class MainMenuScreen
     {
         String paddedButtonText = " {0} ";
 
+        this.fullTable.clearChildren();
+
         this.playButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("screens.MainMenuScreen.playButton")), this.skin);
         this.playButton.setColor(Colors.PLAY_BUTTON);
         this.playButton.addListener(new ClickListener()
@@ -131,18 +134,14 @@ public class MainMenuScreen
                 GameApplication.SetScreen(new ConfirmExitScreen());
             }
         });
-
-        this.fullTable.clearChildren();
         this.fullTable.row();
-        this.fullTable.add(StringManager.get("screens.MainMenuScreen.selectSaveSlot")).align(8).padTop(14.0F).padBottom(6.0F);
+        this.fullTable.add(StringManager.get("screens.MainMenuScreen.selectSaveSlot")).padTop(3F).padBottom(3F  );
         this.fullTable.row();
 
         this.buttonTable.clearChildren();
 
         NinePatchDrawable fileSelectBg = new NinePatchDrawable(new NinePatch(this.skin.getRegion("save-select"), 1, 1, 1, 1));
         for (int i : saveFiles) {
-            final int loc = i;
-
             Player save = saveGames[i];
 
             String saveName = StringManager.get("screens.MainMenuScreen.newGameSaveSlot");
@@ -216,41 +215,41 @@ public class MainMenuScreen
                 t.addAction(Actions.sequence(Actions.fadeOut(1.0E-4F), Actions.delay((i + 1.0F) * 0.1F), Actions.fadeIn(0.2F)));
             }
 
-
             t.setTouchable(Touchable.enabled);
             t.addListener(new ClickListener()
             {
                 public void clicked(InputEvent event, float x, float y)
                 {
-                    MainMenuScreen.this.selectSaveButtonEvent(loc, t);
+                    MainMenuScreen.this.selectSaveButtonEvent(i, t);
                 }
             });
             t.setColor(Color.GRAY);
             this.saveSlotUi.add(t);
 
-            this.fullTable.add(t).padTop(4.0F).colspan(2);
+            this.fullTable.add(t).padTop(4.0F);
             this.fullTable.row();
         }
-        this.buttonTable.add().width(2.0F); //95
+        this.buttonTable.add().width(2.0F);
         this.buttonTable.add(this.playButton).height(20.0F);
         this.buttonTable.add(this.deleteButton).height(20.0F);
-        this.buttonTable.add().width(36.0F); //95
+        this.buttonTable.add().width(36.0F);
         this.buttonTable.add(this.exitButton).height(20.0F);
         this.buttonTable.add(this.optionsButton).height(20.0F);
         this.buttonTable.pack();
 
+        this.fullTable.row();
+        this.fullTable.add(this.buttonTable).height(30.0F).fill(true, false);
+        this.fullTable.row();
 
-        this.fullTable.row();
-        this.fullTable.add(this.buttonTable).colspan(2).height(30.0F).fill(true, false).align(1);
-        this.fullTable.row();
-        this.fullTable.add().colspan(2).height(60.0F);
-        this.fullTable.add("Delver #14 / D-U v" + Config.OfflineVer).size(1F);
         this.fullTable.pack();
 
         if(!Config.skipIntro) {
             this.fullTable.addAction(Actions.sequence(Actions.fadeOut(1.0E-4F), Actions.fadeIn(0.2F)));
         }
 
+        fullTable.add("Delver version 14");
+        fullTable.row();
+        fullTable.add("Delver-Unlimited version " + Config.OfflineVer);
 
         this.playButton.setVisible(false);
         this.deleteButton.setVisible(false);
@@ -333,7 +332,7 @@ public class MainMenuScreen
                 escapePressed = true;
             }
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.F5)) {
-         makeContent(); // refresh
+            GameApplication.SetScreen(new MainMenuScreen());
         }
 
         this.ui.act(delta);

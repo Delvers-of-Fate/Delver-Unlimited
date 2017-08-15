@@ -71,6 +71,7 @@ public class OptionsScreen extends BaseScreen {
         TextButton backBtn = new TextButton(StringManager.get("screens.OptionsScreen.backButton"), (TextButtonStyle)this.skin.get(TextButtonStyle.class));
         backBtn.setWidth(200.0F);
         backBtn.setHeight(50.0F);
+        backBtn.setColor(Color.GREEN);
         backBtn.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 OptionsScreen.this.saveAndClose();
@@ -79,6 +80,7 @@ public class OptionsScreen extends BaseScreen {
         TextButton controlsBtn = new TextButton(StringManager.get("screens.OptionsScreen.inputButton"), (TextButtonStyle)this.skin.get(TextButtonStyle.class));
         controlsBtn.setWidth(200.0F);
         controlsBtn.setHeight(50.0F);
+        controlsBtn.setColor(Color.BLUE);
         controlsBtn.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 OptionsScreen.this.saveOptions();

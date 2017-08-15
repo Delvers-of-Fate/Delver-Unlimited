@@ -3,15 +3,20 @@ package com.interrupt.dungeoneer.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.List;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.game.Colors;
 import com.interrupt.dungeoneer.game.Game;
@@ -29,7 +34,9 @@ import java.text.MessageFormat;
 public class ModManagerScreen extends BaseScreen {
 
     private Table fullTable = null;
+    private Table buttonTable = null;
     Array<Table> selectedUI = new Array();
+
     private Mod selectedMod = null;
     private static String baseString = "screens.ModManagerScreen.";
 
@@ -49,6 +56,8 @@ public class ModManagerScreen extends BaseScreen {
         this.fullTable.setFillParent(true);
         this.fullTable.align(2);
 
+        this.buttonTable = new Table(this.skin);
+
         this.ui.addActor(this.fullTable);
         Gdx.input.setInputProcessor(this.ui);
     }
@@ -66,8 +75,6 @@ public class ModManagerScreen extends BaseScreen {
 
     private void makeContent() {
         String paddedButtonText = " {0} ";
-        float fontScale = 1.0F;
-        float rowHeight = 15.0F;
 
         enableButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get(baseString + "enableButton")), this.skin);
         enableButton.setWidth(200.0F);
@@ -109,39 +116,28 @@ public class ModManagerScreen extends BaseScreen {
             }
         });
 
-        this.fullTable.clearChildren();
-        this.fullTable.row();
-        this.fullTable.add(StringManager.get(baseString + "modsLabel")).align(8).padTop(14.0F).padBottom(6.0F);
-        this.fullTable.row();
-        Table buttonTable = new Table(this.skin);
+        fullTable.row();
+        fullTable.add(StringManager.get(baseString + "modsLabel")).align(8).padTop(14.0F).padBottom(6.0F);
+        fullTable.row();
+
         buttonTable.add(enableButton);
         buttonTable.add(disableButton);
         buttonTable.add(wwwButton);
         buttonTable.add(backButton);
-        buttonTable.getCell(enableButton);
-        buttonTable.getCell(disableButton);
-        buttonTable.getCell(wwwButton);
-        buttonTable.getCell(backButton);
         fullTable.add(buttonTable);
-        this.fullTable.row();
+        fullTable.row();
 
         NinePatchDrawable fileSelectBg = new NinePatchDrawable(new NinePatch(this.skin.getRegion("save-select"), 1, 1, 1, 5));
         for (Mod mod : Game.modManager.modList) {
-            final Table t = new Table(this.skin);
-            t.add(StringManager.get(baseString + "name") + mod.name);
+            Table t = new Table(this.skin);
             t.setBackground(fileSelectBg);
-            t.center();
+            t.add(StringManager.get(baseString + "name") + mod.name).align(Align.left);
             t.row();
-
-            Table t2 = new Table(this.skin);
-            t2.add(StringManager.get(baseString + "author") + mod.author);
-            t2.row();
-            t2.add(StringManager.get(baseString + "description") + mod.description);
-            t2.row();
-            t2.add(StringManager.get(baseString + "version") + mod.version + " | " + StringManager.get(baseString + "modState") + mod.modState);
-            t2.pack();
-
-            t.add(t2);
+            t.add(StringManager.get(baseString + "author") + mod.author).align(Align.left);
+            t.row();
+            t.add(StringManager.get(baseString + "description") + mod.description).align(Align.left);
+            t.row();
+            t.add(StringManager.get(baseString + "version") + mod.version + " | " + StringManager.get(baseString + "modState") + mod.modState).align(Align.left);
             t.pack();
 
             t.setTouchable(Touchable.enabled);
@@ -181,7 +177,7 @@ public class ModManagerScreen extends BaseScreen {
                     this.disableButton.setVisible(false);
                     break;
             }
-            if (!selectedMod.url.trim().isEmpty()) {
+            if (selectedMod.url != null && !selectedMod.url.trim().isEmpty()) {
                 this.wwwButton.setVisible(true);
             } else {
                 this.wwwButton.setVisible(false);

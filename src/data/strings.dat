@@ -2651,7 +2651,7 @@
     },
     "screens.ModManagerScreen.modState": {
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName": "Mod State: ",
+        "localizedName": "State: ",
         "comment": ""
     },
     "screens.ModManagerScreen.backButton": {
