@@ -2663,5 +2663,20 @@
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "Mods! Restart the game for changes to take effect",
         "comment": ""
+    },
+    "message.jump.notOnFloor":{
+        "class":"com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName":"You must be on a floor to jump!",
+        "comment":"Message shown when the player isn't on a floor and tries to jump"
+    },
+    "message.general.hasStatusEffects":{
+        "class":"com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName":"You can't do that whilst having active effects!",
+        "comment":"Message shown when the player tries to jump / sprint whilst having effects active"
+    },
+    "message.general.isAttacking":{
+        "class":"com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName":"You can't attack and do that at the same time!",
+        "comment":"Message shown when the player tries to sprint or jump at the same time as they're in combat"
     }
 }
