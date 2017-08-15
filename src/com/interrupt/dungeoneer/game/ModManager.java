@@ -60,12 +60,12 @@ public class ModManager {
     }
 
     private void addMod(File modFolder) {
-        String theFile = null;
+        String datFile = null;
         Mod theMod = null;
         String modFile = null;
 
-        theFile = modFolder.toString() + File.separator + "mod.json";
-        File modFileF = new File(theFile = modFolder.toString() + File.separator + "mod.json");
+        datFile = modFolder.toString() + File.separator + "mod.json";
+        File modFileF = new File(datFile = modFolder.toString() + File.separator + "mod.json");
 
         /* DOES MOD.JSON EXIST */
         if(!modFileF.exists() && !modFileF.isDirectory()) {
@@ -75,7 +75,7 @@ public class ModManager {
 
         Gdx.app.log("ModManager.addMod", modFolder.getAbsolutePath());
 
-        theMod = Game.fromJson(Mod.class, new FileHandle(theFile));
+        theMod = Game.fromJson(Mod.class, new FileHandle(datFile));
         theMod.modPath = modFolder.toString();
 
         if(theMod.modState == null) {
@@ -86,7 +86,7 @@ public class ModManager {
         modFile = Game.toJson(theMod, Mod.class);
 
         try {
-            Files.write(Paths.get(theFile), modFile.getBytes());
+            Files.write(Paths.get(datFile), modFile.getBytes());
         } catch (Exception ex) {
             Gdx.app.error("ModManager", ex.getMessage());
         }

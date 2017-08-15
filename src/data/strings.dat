@@ -2658,5 +2658,10 @@
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "Back",
         "comment": ""
+    },
+    "screens.ModManagerScreen.modsLabel": {
+        "class": "com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Mods! Restart the game for changes to take effect",
+        "comment": ""
     }
 }

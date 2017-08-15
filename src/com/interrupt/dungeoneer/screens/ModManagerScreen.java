@@ -108,6 +108,22 @@ public class ModManagerScreen extends BaseScreen {
             }
         });
 
+        this.fullTable.clearChildren();
+        this.fullTable.row();
+        this.fullTable.add(StringManager.get(baseString + "modsLabel")).align(8).padTop(14.0F).padBottom(6.0F);
+        this.fullTable.row();
+        Table buttonTable = new Table(this.skin);
+        buttonTable.add(enableButton);
+        buttonTable.add(disableButton);
+        buttonTable.add(wwwButton);
+        buttonTable.add(backButton);
+        buttonTable.getCell(enableButton);
+        buttonTable.getCell(disableButton);
+        buttonTable.getCell(wwwButton);
+        buttonTable.getCell(backButton);
+        fullTable.add(buttonTable);
+        this.fullTable.row();
+
         NinePatchDrawable fileSelectBg = new NinePatchDrawable(new NinePatch(this.skin.getRegion("save-select"), 1, 1, 1, 5));
         for (Mod mod : Game.modManager.modList) {
             final Table t = new Table(this.skin);
@@ -141,22 +157,6 @@ public class ModManagerScreen extends BaseScreen {
             this.fullTable.add(t).padTop(4.0F).colspan(2);
             this.fullTable.row();
         }
-
-        this.fullTable.row();
-
-        Table buttonTable = new Table();
-        buttonTable.add(enableButton);
-        buttonTable.add(disableButton);
-        buttonTable.add(wwwButton);
-        buttonTable.add(backButton);
-        buttonTable.getCell(enableButton).padRight(4.0F);
-        buttonTable.getCell(disableButton).padRight(4.0F);
-        buttonTable.getCell(wwwButton).padRight(4.0F);
-        buttonTable.getCell(backButton).padRight(4F);
-
-        this.fullTable.add(buttonTable);
-       // this.fullTable.getCell(header).align(1).colspan(3).padBottom(8.0F);
-        this.fullTable.getCell(buttonTable).colspan(2).padTop(8.0F);
 
         this.fullTable.pack();
 
