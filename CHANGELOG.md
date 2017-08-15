@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Now targeting Java 8, and re-enabled creating `save` dir if not found
+- A lot of minor cleanup, and minor GUI changes
 
 ## [1.3.0] - 2017-07-28
 ### Added
