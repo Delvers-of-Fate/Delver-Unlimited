@@ -172,10 +172,12 @@ public class ModManagerScreen extends BaseScreen {
             switch (mod.modState) {
                 case Enabled:
                     this.disableButton.setVisible(true);
+                    this.enableButton.setVisible(false);
                     break;
 
                 case Disabled:
                     this.enableButton.setVisible(true);
+                    this.disableButton.setVisible(false);
                     break;
             }
             if (!selectedMod.url.trim().isEmpty()) {
