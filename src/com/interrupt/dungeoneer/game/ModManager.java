@@ -13,6 +13,8 @@ import com.interrupt.managers.ItemManager;
 import com.interrupt.managers.MonsterManager;
 import com.interrupt.managers.TileManager;
 import net.cotd.delverunlimited.helper.Mod;
+import net.cotd.delverunlimited.helper.ModInfo;
+import net.cotd.delverunlimited.helper.ModSettings;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -24,6 +26,9 @@ public class ModManager {
     public Array<String> modsFound = new Array(); // MODS LOAD FROM THIS ARRAY!!
     public Array<String> excludeFiles = new Array();
     public Array<Mod> modList = new Array<Mod>();
+    public Array<ModInfo> modInfo = new Array<ModInfo>();
+    public String MOD_SETTINGS_FILE = "mod_settings.json";
+    public String MOD_INFO_FILE = "mod_info.json";
 
     public ModManager() {
         this.modsFound.add(".");
@@ -51,7 +56,7 @@ public class ModManager {
 
         // final calls
         for (Mod mod : modList) {
-            if(mod.modState == Mod.ModState.Enabled) {
+            if(mod.modState == ModSettings.ModState.Enabled) {
                 this.modsFound.add(mod.modPath);
             }
         }
@@ -60,36 +65,42 @@ public class ModManager {
     }
 
     private void addMod(File modFolder) {
-        String datFile = null;
-        Mod theMod = null;
-        String modFile = null;
+        String MOD_FOLDER_FULL = modFolder.toString() + File.separator;
 
-        datFile = modFolder.toString() + File.separator + "mod.json";
-        File modFileF = new File(datFile = modFolder.toString() + File.separator + "mod.json");
+        File modInfoFile = new File(MOD_FOLDER_FULL + MOD_INFO_FILE);
+        File modSettingsFile = new File(MOD_FOLDER_FULL + MOD_SETTINGS_FILE);
 
         /* DOES MOD.JSON EXIST */
-        if(!modFileF.exists() && !modFileF.isDirectory()) {
-            Gdx.app.log("ModManager", modFolder.toString() + " did not have a mod.json and will not load! Notify the developer of the mod to add support for Delver-Unlimited!");
+        if(!modInfoFile.exists() && !modInfoFile.isDirectory()) {
+            Gdx.app.log("ModManager", modFolder.toString() + " did not have a mod_info.json and will not load! Notify the developer of the mod to add support for Delver-Unlimited!");
             return;
         }
 
-        Gdx.app.log("ModManager.addMod", modFolder.getAbsolutePath());
+        Gdx.app.log("ModManager.addMod()", modFolder.getAbsolutePath());
 
-        theMod = Game.fromJson(Mod.class, new FileHandle(datFile));
-        theMod.modPath = modFolder.toString();
+        ModSettings settingsFile = null;
+        if(modSettingsFile.exists()) {
+            settingsFile = Game.fromJson(ModSettings.class, new FileHandle(MOD_FOLDER_FULL + MOD_SETTINGS_FILE));
+        } else {
+            settingsFile = new ModSettings(ModSettings.ModState.Enabled, modFolder.toString());
 
-        if(theMod.modState == null) {
-            theMod.modState = Mod.ModState.Enabled;
+           String modFile = Game.toJson(settingsFile, Mod.class);
+
+            try {
+                Files.write(Paths.get(MOD_FOLDER_FULL + MOD_SETTINGS_FILE), modFile.getBytes());
+            } catch (Exception ex) {
+                Gdx.app.error("ModManager", ex.getMessage());
+            }
         }
 
-        modList.add(theMod);
-        modFile = Game.toJson(theMod, Mod.class);
+        ModInfo infoFile = Game.fromJson(ModInfo.class, new FileHandle(modInfoFile));
+        Mod finishedMod = new Mod(infoFile.name, infoFile.author, infoFile.description, infoFile.version, infoFile.url, settingsFile.modState, settingsFile.modPath);
 
-        try {
-            Files.write(Paths.get(datFile), modFile.getBytes());
-        } catch (Exception ex) {
-            Gdx.app.error("ModManager", ex.getMessage());
+        if(finishedMod.modState == null) {
+            finishedMod.modState = ModSettings.ModState.Enabled;
         }
+
+        modList.add(finishedMod);
     }
 
     private void loadExcludesList() {

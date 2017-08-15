@@ -17,6 +17,7 @@ import com.interrupt.dungeoneer.game.Colors;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.managers.StringManager;
 import net.cotd.delverunlimited.helper.Mod;
+import net.cotd.delverunlimited.helper.ModSettings;
 
 import java.awt.*;
 import java.io.File;
@@ -209,14 +210,14 @@ public class ModManagerScreen extends BaseScreen {
 
     private void enableMod() {
         this.enableButton.setVisible(false);
-        Mod newMod = selectedMod;
+        ModSettings newSettingsMod = new ModSettings(selectedMod.modState, selectedMod.modPath);
 
-        newMod.modState = Mod.ModState.Enabled;
+        newSettingsMod.modState = ModSettings.ModState.Enabled;
 
-        String modFile = Game.toJson(newMod, Mod.class);
+        String modFile = Game.toJson(newSettingsMod, ModSettings.class);
 
         try {
-            Files.write(Paths.get(newMod.modPath + File.separator + "mod.json"), modFile.getBytes());
+            Files.write(Paths.get(newSettingsMod.modPath + File.separator + Game.modManager.MOD_SETTINGS_FILE), modFile.getBytes());
         } catch (Exception ex) {
             Gdx.app.error("ModManager", ex.getMessage());
         }
@@ -224,14 +225,14 @@ public class ModManagerScreen extends BaseScreen {
 
     private void disableMod() {
         this.disableButton.setVisible(false);
-        Mod newMod = selectedMod;
+        ModSettings newSettingsMod = new ModSettings(selectedMod.modState, selectedMod.modPath);
 
-        newMod.modState = Mod.ModState.Disabled;
+        newSettingsMod.modState = ModSettings.ModState.Disabled;
 
-        String modFile = Game.toJson(newMod, Mod.class);
+        String modFile = Game.toJson(newSettingsMod, ModSettings.class);
 
         try {
-            Files.write(Paths.get(newMod.modPath + File.separator + "mod.json"), modFile.getBytes());
+            Files.write(Paths.get(newSettingsMod.modPath + File.separator + Game.modManager.MOD_SETTINGS_FILE), modFile.getBytes());
         } catch (Exception ex) {
             Gdx.app.error("ModManager", ex.getMessage());
         }
