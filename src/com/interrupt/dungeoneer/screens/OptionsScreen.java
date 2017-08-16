@@ -28,6 +28,8 @@ import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.ui.UiSkin;
 import com.interrupt.managers.StringManager;
 
+import java.text.MessageFormat;
+
 public class OptionsScreen extends BaseScreen {
     private float fontSize = 1.0F;
     private Slider musicVolume;
@@ -68,7 +70,10 @@ public class OptionsScreen extends BaseScreen {
         this.viewport.setWorldWidth((float)Gdx.graphics.getWidth() / this.uiScale);
         this.viewport.setWorldHeight((float)Gdx.graphics.getHeight() / this.uiScale);
         this.ui = new Stage(this.viewport);
-        TextButton backBtn = new TextButton(StringManager.get("screens.OptionsScreen.backButton"), (TextButtonStyle)this.skin.get(TextButtonStyle.class));
+
+        String paddedButtonText = " {0} ";
+
+        TextButton backBtn = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("screens.OptionsScreen.backButton")), (TextButtonStyle)this.skin.get(TextButtonStyle.class));
         backBtn.setWidth(200.0F);
         backBtn.setHeight(50.0F);
         backBtn.setColor(Color.GREEN);
@@ -77,7 +82,7 @@ public class OptionsScreen extends BaseScreen {
                 OptionsScreen.this.saveAndClose();
             }
         });
-        TextButton controlsBtn = new TextButton(StringManager.get("screens.OptionsScreen.inputButton"), (TextButtonStyle)this.skin.get(TextButtonStyle.class));
+        TextButton controlsBtn = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("screens.OptionsScreen.inputButton")), (TextButtonStyle)this.skin.get(TextButtonStyle.class));
         controlsBtn.setWidth(200.0F);
         controlsBtn.setHeight(50.0F);
         controlsBtn.setColor(Color.BLUE);
@@ -87,7 +92,7 @@ public class OptionsScreen extends BaseScreen {
                 GameApplication.SetScreen(new OptionsInputScreen());
             }
         });
-        TextButton modBtn = new TextButton(StringManager.get("screens.OptionsScreen.modBtn"), (TextButtonStyle)this.skin.get(TextButtonStyle.class));
+        TextButton modBtn = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("screens.OptionsScreen.modBtn")), (TextButtonStyle)this.skin.get(TextButtonStyle.class));
         modBtn.setWidth(200.0F);
         modBtn.setHeight(50.0F);
         modBtn.setColor(Color.RED);

@@ -1484,36 +1484,6 @@
         "localizedName":"{0} gold",
         "comment":"Text shown when the player looks a gold item. {0} is the amount."
     },
-	"items.Platinum.defaultNameText":{
-        "class":"com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName":"Platinum",
-        "comment":"Text shown when the player looks a platinum item. {0} is the amount."
-    },
-    "items.Platinum.platinumItemText":{
-        "class":"com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName":"{0} platinum",
-        "comment":"Text shown when the player looks a platinum item. {0} is the amount."
-    },
-    "items.Silver.defaultNameText":{
-        "class":"com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName":"Silver",
-        "comment":"Text shown when the player looks a silver item. {0} is the amount."
-    },
-    "items.Silver.silverItemText":{
-        "class":"com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName":"{0} silver",
-        "comment":"Text shown when the player looks a silver item. {0} is the amount."
-    },
-    "items.Copper.defaultNameText":{
-        "class":"com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName":"Copper",
-        "comment":"Text shown when the player looks a copper item. {0} is the amount."
-    },
-    "items.Copper.copperItemText":{
-        "class":"com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName":"{0} copper",
-        "comment":"Text shown when the player looks a copper item. {0} is the amount."
-    },
     "items.Gun.defaultNameText":{
         "class":"com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName":"GUN",
@@ -2678,5 +2648,35 @@
         "class":"com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName":"You can't attack and do that at the same time!",
         "comment":"Message shown when the player tries to sprint or jump at the same time as they're in combat"
+    },
+    "items.Platinum.defaultNameText":{
+        "class":"com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName":"Platinum",
+        "comment":"Text shown when the player looks a platinum item. {0} is the amount."
+    },
+    "items.Platinum.platinumItemText":{
+        "class":"com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName":"{0} platinum",
+        "comment":"Text shown when the player looks a platinum item. {0} is the amount."
+    },
+    "items.Silver.defaultNameText":{
+        "class":"com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName":"Silver",
+        "comment":"Text shown when the player looks a silver item. {0} is the amount."
+    },
+    "items.Silver.silverItemText":{
+        "class":"com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName":"{0} silver",
+        "comment":"Text shown when the player looks a silver item. {0} is the amount."
+    },
+    "items.Copper.defaultNameText":{
+        "class":"com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName":"Copper",
+        "comment":"Text shown when the player looks a copper item. {0} is the amount."
+    },
+    "items.Copper.copperItemText":{
+        "class":"com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName":"{0} copper",
+        "comment":"Text shown when the player looks a copper item. {0} is the amount."
     }
 }

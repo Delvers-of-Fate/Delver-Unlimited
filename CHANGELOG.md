@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Added
+- Padding for buttons in `OptionsScreen`
+
+### Changed
+- Moved around strings in `strings.dat`
+
 ## [1.4.0] - 2017-08-15
 ### Added
 - New [JavaFX FileChooser](https://docs.oracle.com/javase/8/javafx/api/javafx/stage/FileChooser.html) for DelvEdit
