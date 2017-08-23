@@ -28,9 +28,9 @@ public class EditorStarter
         checkArgs(args);
 
         if(Config.isRelease) {
-            System.out.println("Running Delver-Unlimited v" + Config.OfflineVer + " by Hawaii_Beach");
+            System.out.println("Running Delver-Unlimited v" + Config.OfflineVer + " by the CotD team");
         } else {
-            System.out.println("Running Delver-Unlimited v" + Config.OfflineVer + " NON-RELEASE by Hawaii_Beach");
+            System.out.println("Running Delver-Unlimited v" + Config.OfflineVer + " NON-RELEASE by the CotD team");
             System.out.println("Test build given out by the developer, and should not be redistributed!");
         }
 

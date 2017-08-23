@@ -333,6 +333,11 @@ public class MainMenuScreen
             }
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.F5)) {
             GameApplication.SetScreen(new MainMenuScreen());
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.FORWARD_DEL)) {
+                if(selectedSave != null) {
+                    GameApplication.SetScreen(new ConfirmScreen(selectedSave));
+                }
+
         }
 
         this.ui.act(delta);
@@ -352,6 +357,7 @@ public class MainMenuScreen
         isSelected = false;
 
         if(this.selectedSaveTable == selected) {
+            // unselect
             selected = null;
             isSelected = true;
         }
@@ -368,11 +374,17 @@ public class MainMenuScreen
         } else {
             this.playButton.setVisible(false);
         }
-        selectedSave = saveLoc;
 
-        if(saveGames[selectedSave] != null && !isSelected) {
+        if(selected != null) {
+            selectedSave = saveLoc;
+        } else {
+            selectedSave = null;
+        }
+
+
+        if(selectedSave != null && saveGames[selectedSave] != null && !isSelected) {
             this.deleteButton.setVisible(true);
-        } else if (progress[selectedSave] != null && !isSelected) {
+        } else if (selectedSave != null && progress[selectedSave] != null && !isSelected) {
             this.deleteButton.setVisible(true);
         } else {
             this.deleteButton.setVisible(false);
