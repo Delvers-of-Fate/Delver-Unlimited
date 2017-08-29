@@ -3,20 +3,18 @@ package com.interrupt.dungeoneer.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.game.Colors;
 import com.interrupt.dungeoneer.game.Game;
@@ -44,6 +42,11 @@ public class ModManagerScreen extends BaseScreen {
     private TextButton disableButton;
     private TextButton wwwButton;
     private TextButton backButton;
+
+    private Label nameLabel;
+    private Label authorLabel;
+    private Label descLabel;
+    private Label versionLabel;
 
     public ModManagerScreen() {
         this.screenName = "ConfirmExitScreen";
@@ -117,7 +120,7 @@ public class ModManagerScreen extends BaseScreen {
         });
 
         fullTable.row();
-        fullTable.add(StringManager.get(baseString + "modsLabel")).align(8).padTop(14.0F).padBottom(6.0F);
+        fullTable.add(StringManager.get(baseString + "modsLabel")).align(Align.left).padTop(14.0F).padBottom(6.0F);
         fullTable.row();
 
         buttonTable.add(enableButton);
@@ -127,6 +130,52 @@ public class ModManagerScreen extends BaseScreen {
         fullTable.add(buttonTable);
         fullTable.row();
 
+        // texture
+        Texture tfBackground = new Texture(Gdx.files.internal("ui/tfbackground.png"));
+        Texture scroll_horizontal = new Texture(Gdx.files.internal("ui/scroll_horizontal.png"));
+        Texture knob_scroll = new Texture(Gdx.files.internal("ui/knob_scroll.png"));
+
+        //ScrollPane
+        ScrollPane.ScrollPaneStyle sps = new ScrollPane.ScrollPaneStyle();
+        sps.vScroll = new TextureRegionDrawable(new TextureRegion(scroll_horizontal));
+        sps.vScrollKnob = new TextureRegionDrawable(new TextureRegion(knob_scroll));
+
+        // list stuff
+        List.ListStyle listS = new List.ListStyle();
+        listS.font = font;
+        listS.fontColorSelected = Color.BLACK;
+        listS.fontColorUnselected = Color.GRAY;
+        listS.selection = new TextureRegionDrawable(new TextureRegion(tfBackground));
+        List list2 = new List(listS);
+
+        Array<Mod> arrayMods = new Array<Mod>();
+        arrayMods.addAll(Game.modManager.modList);
+
+        list2.setItems(arrayMods);
+        list2.pack();
+        ScrollPane scrollPane = new ScrollPane(list2, sps);
+        scrollPane.addListener(new ClickListener()
+        {
+            public void clicked(InputEvent event, float x, float y)
+            {
+               selectMod((Mod)list2.getSelected());
+            }
+        });
+
+        nameLabel = new Label(null, skin);
+        authorLabel = new Label(null, skin);
+        descLabel = new Label(null, skin);
+        versionLabel = new Label(null, skin);
+
+        fullTable.add(nameLabel).align(Align.left).row();
+        fullTable.add(authorLabel).align(Align.left).row();
+        fullTable.add(descLabel).align(Align.left).row();
+        fullTable.add(versionLabel).align(Align.left).row();
+
+        fullTable.add(scrollPane).align(Align.right);
+
+        fullTable.pack();
+        /*
         NinePatchDrawable fileSelectBg = new NinePatchDrawable(new NinePatch(this.skin.getRegion("save-select"), 1, 1, 1, 5));
         for (Mod mod : Game.modManager.modList) {
             Table t = new Table(this.skin);
@@ -156,13 +205,19 @@ public class ModManagerScreen extends BaseScreen {
         }
 
         this.fullTable.pack();
+        */
 
         this.enableButton.setVisible(false);
         this.disableButton.setVisible(false);
         this.wwwButton.setVisible(false);
     }
 
-    private void selectMod(Table table, Mod mod) {
+    private void selectMod(Mod mod) {
+        nameLabel.setText(StringManager.get(baseString + "name") + mod.name);
+        authorLabel.setText(StringManager.get(baseString + "author") + mod.author);
+        descLabel.setText(StringManager.get(baseString + "description") + mod.description);
+        versionLabel.setText(StringManager.get(baseString + "version") + mod.version);
+
         selectedMod = mod;
         for (int i = 0; i < this.selectedUI.size; i++) {
             this.selectedUI.get(i).setColor(Color.GRAY);
@@ -181,10 +236,6 @@ public class ModManagerScreen extends BaseScreen {
                 this.wwwButton.setVisible(true);
             } else {
                 this.wwwButton.setVisible(false);
-            }
-
-            if (table != null) {
-                table.setColor(Color.WHITE);
             }
         }
     }

@@ -60,7 +60,6 @@ public class ModManager {
                 this.modsFound.add(mod.modPath);
             }
         }
-
         this.loadExcludesList();
     }
 
