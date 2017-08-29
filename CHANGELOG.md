@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - Padding for buttons in `OptionsScreen`
+- Made the done button in the level up overlay translatable
+- A scrollable list that replaces the.. whatever we had before in the mod manager screen
 
 ### Changed
 - Moved around strings in `strings.dat`
