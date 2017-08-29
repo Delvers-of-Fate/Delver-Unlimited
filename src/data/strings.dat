@@ -2678,5 +2678,10 @@
         "class":"com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName":"{0} copper",
         "comment":"Text shown when the player looks a copper item. {0} is the amount."
+    },
+    "overlays.LevelUpOverlay.done":{
+        "class":"com.interrupt.dungeoneer.game.LocalizedString",
+        "localizedName": "Done",
+        "comment":"D-U only: customize the done button in the level up overlay"
     }
 }
