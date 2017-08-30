@@ -22,4 +22,10 @@ public class Mod {
         this.modPath = modPath;
     }
 
+    // We want to output the mod name by default if it's in an array
+    @Override
+    public String toString() {
+        return name;
+    }
+
 }

@@ -33,7 +33,6 @@ public class ModManagerScreen extends BaseScreen {
 
     private Table fullTable = null;
     private Table buttonTable = null;
-    Array<Table> selectedUI = new Array();
 
     private Mod selectedMod = null;
     private static String baseString = "screens.ModManagerScreen.";
@@ -47,6 +46,7 @@ public class ModManagerScreen extends BaseScreen {
     private Label authorLabel;
     private Label descLabel;
     private Label versionLabel;
+    private Label stateLabel;
 
     public ModManagerScreen() {
         this.screenName = "ConfirmExitScreen";
@@ -58,7 +58,7 @@ public class ModManagerScreen extends BaseScreen {
         this.fullTable = new Table(this.skin);
         this.fullTable.setFillParent(true);
         this.fullTable.align(2);
-
+        this.uiScale = 1f;
         this.buttonTable = new Table(this.skin);
 
         this.ui.addActor(this.fullTable);
@@ -83,6 +83,7 @@ public class ModManagerScreen extends BaseScreen {
         enableButton.setWidth(200.0F);
         enableButton.setHeight(50.0F);
         enableButton.setColor(Colors.PLAY_BUTTON);
+        enableButton.setVisible(false);
         enableButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 enableMod();
@@ -93,6 +94,7 @@ public class ModManagerScreen extends BaseScreen {
         disableButton.setWidth(200.0F);
         disableButton.setHeight(50.0F);
         disableButton.setColor(Colors.ERASE_BUTTON);
+        disableButton.setVisible(false);
         disableButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 disableMod();
@@ -103,6 +105,7 @@ public class ModManagerScreen extends BaseScreen {
         wwwButton.setWidth(200.0F);
         wwwButton.setHeight(50.0F);
         wwwButton.setColor(Colors.ICE);
+        wwwButton.setVisible(false);
         wwwButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 visitSite(selectedMod.url);
@@ -166,50 +169,17 @@ public class ModManagerScreen extends BaseScreen {
         authorLabel = new Label(null, skin);
         descLabel = new Label(null, skin);
         versionLabel = new Label(null, skin);
+        stateLabel = new Label(null, skin);
 
         fullTable.add(nameLabel).align(Align.left).row();
         fullTable.add(authorLabel).align(Align.left).row();
         fullTable.add(descLabel).align(Align.left).row();
         fullTable.add(versionLabel).align(Align.left).row();
+        fullTable.add(stateLabel).align(Align.left).row();
 
-        fullTable.add(scrollPane).align(Align.right);
+        fullTable.add(scrollPane).align(Align.center);
 
         fullTable.pack();
-        /*
-        NinePatchDrawable fileSelectBg = new NinePatchDrawable(new NinePatch(this.skin.getRegion("save-select"), 1, 1, 1, 5));
-        for (Mod mod : Game.modManager.modList) {
-            Table t = new Table(this.skin);
-            t.setBackground(fileSelectBg);
-            t.add(StringManager.get(baseString + "name") + mod.name).align(Align.left);
-            t.row();
-            t.add(StringManager.get(baseString + "author") + mod.author).align(Align.left);
-            t.row();
-            t.add(StringManager.get(baseString + "description") + mod.description).align(Align.left);
-            t.row();
-            t.add(StringManager.get(baseString + "version") + mod.version + " | " + StringManager.get(baseString + "modState") + mod.modState).align(Align.left);
-            t.pack();
-
-            t.setTouchable(Touchable.enabled);
-            t.addListener(new ClickListener()
-            {
-                public void clicked(InputEvent event, float x, float y)
-                {
-                    selectMod(t, mod);
-                }
-            });
-            t.setColor(Color.GRAY);
-            selectedUI.add(t);
-
-            this.fullTable.add(t).padTop(4.0F).colspan(2);
-            this.fullTable.row();
-        }
-
-        this.fullTable.pack();
-        */
-
-        this.enableButton.setVisible(false);
-        this.disableButton.setVisible(false);
-        this.wwwButton.setVisible(false);
     }
 
     private void selectMod(Mod mod) {
@@ -217,27 +187,28 @@ public class ModManagerScreen extends BaseScreen {
         authorLabel.setText(StringManager.get(baseString + "author") + mod.author);
         descLabel.setText(StringManager.get(baseString + "description") + mod.description);
         versionLabel.setText(StringManager.get(baseString + "version") + mod.version);
+        stateLabel.setText(StringManager.get(baseString + "modState") + mod.modState);
+
 
         selectedMod = mod;
-        for (int i = 0; i < this.selectedUI.size; i++) {
-            this.selectedUI.get(i).setColor(Color.GRAY);
-            switch (mod.modState) {
-                case Enabled:
-                    this.disableButton.setVisible(true);
-                    this.enableButton.setVisible(false);
-                    break;
 
-                case Disabled:
-                    this.enableButton.setVisible(true);
-                    this.disableButton.setVisible(false);
-                    break;
-            }
-            if (selectedMod.url != null && !selectedMod.url.trim().isEmpty()) {
-                this.wwwButton.setVisible(true);
-            } else {
-                this.wwwButton.setVisible(false);
-            }
+        switch (mod.modState) {
+            case Enabled:
+                this.disableButton.setVisible(true);
+                this.enableButton.setVisible(false);
+                break;
+
+            case Disabled:
+                this.enableButton.setVisible(true);
+                this.disableButton.setVisible(false);
+                break;
         }
+        if (selectedMod.url != null && !selectedMod.url.trim().isEmpty()) {
+            this.wwwButton.setVisible(true);
+        } else {
+            this.wwwButton.setVisible(false);
+        }
+
     }
 
     public void draw(float delta) {
