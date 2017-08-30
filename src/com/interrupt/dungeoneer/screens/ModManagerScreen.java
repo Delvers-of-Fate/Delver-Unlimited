@@ -151,10 +151,7 @@ public class ModManagerScreen extends BaseScreen {
         listS.selection = new TextureRegionDrawable(new TextureRegion(tfBackground));
         List list2 = new List(listS);
 
-        Array<Mod> arrayMods = new Array<Mod>();
-        arrayMods.addAll(Game.modManager.modList);
-
-        list2.setItems(arrayMods);
+        list2.setItems(Game.modManager.modList);
         list2.pack();
         ScrollPane scrollPane = new ScrollPane(list2, sps);
         scrollPane.addListener(new ClickListener()
