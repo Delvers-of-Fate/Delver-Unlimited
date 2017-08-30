@@ -14,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Array;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.game.Colors;
 import com.interrupt.dungeoneer.game.Game;
@@ -57,8 +56,7 @@ public class ModManagerScreen extends BaseScreen {
 
         this.fullTable = new Table(this.skin);
         this.fullTable.setFillParent(true);
-        this.fullTable.align(2);
-        this.uiScale = 1f;
+        this.fullTable.align(Align.top);
         this.buttonTable = new Table(this.skin);
 
         this.ui.addActor(this.fullTable);
@@ -80,8 +78,8 @@ public class ModManagerScreen extends BaseScreen {
         String paddedButtonText = " {0} ";
 
         enableButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get(baseString + "enableButton")), this.skin);
-        enableButton.setWidth(200.0F);
-        enableButton.setHeight(50.0F);
+        enableButton.setWidth(200F);
+        enableButton.setHeight(50F);
         enableButton.setColor(Colors.PLAY_BUTTON);
         enableButton.setVisible(false);
         enableButton.addListener(new ClickListener() {
@@ -91,8 +89,8 @@ public class ModManagerScreen extends BaseScreen {
         });
 
         disableButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get(baseString + "disableButton")), this.skin);
-        disableButton.setWidth(200.0F);
-        disableButton.setHeight(50.0F);
+        disableButton.setWidth(200F);
+        disableButton.setHeight(50F);
         disableButton.setColor(Colors.ERASE_BUTTON);
         disableButton.setVisible(false);
         disableButton.addListener(new ClickListener() {
@@ -102,8 +100,8 @@ public class ModManagerScreen extends BaseScreen {
         });
 
         wwwButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get(baseString + "wwwButton")), this.skin);
-        wwwButton.setWidth(200.0F);
-        wwwButton.setHeight(50.0F);
+        wwwButton.setWidth(200F);
+        wwwButton.setHeight(50F);
         wwwButton.setColor(Colors.ICE);
         wwwButton.setVisible(false);
         wwwButton.addListener(new ClickListener() {
@@ -113,8 +111,8 @@ public class ModManagerScreen extends BaseScreen {
         });
 
         backButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get(baseString + "backButton")), this.skin);
-        backButton.setWidth(200.0F);
-        backButton.setHeight(50.0F);
+        backButton.setWidth(200F);
+        backButton.setHeight(50F);
         backButton.setColor(Colors.EXPLOSION);
         backButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
@@ -123,7 +121,7 @@ public class ModManagerScreen extends BaseScreen {
         });
 
         fullTable.row();
-        fullTable.add(StringManager.get(baseString + "modsLabel")).align(Align.left).padTop(14.0F).padBottom(6.0F);
+        fullTable.add(StringManager.get(baseString + "modsLabel")).align(Align.center).padTop(14.0F).padBottom(6.0F);
         fullTable.row();
 
         buttonTable.add(enableButton);
@@ -133,32 +131,30 @@ public class ModManagerScreen extends BaseScreen {
         fullTable.add(buttonTable);
         fullTable.row();
 
-        // texture
-        Texture tfBackground = new Texture(Gdx.files.internal("ui/tfbackground.png"));
-        Texture scroll_horizontal = new Texture(Gdx.files.internal("ui/scroll_horizontal.png"));
-        Texture knob_scroll = new Texture(Gdx.files.internal("ui/knob_scroll.png"));
-
-        //ScrollPane
+        // Scroll Pane Style
         ScrollPane.ScrollPaneStyle sps = new ScrollPane.ScrollPaneStyle();
-        sps.vScroll = new TextureRegionDrawable(new TextureRegion(scroll_horizontal));
-        sps.vScrollKnob = new TextureRegionDrawable(new TextureRegion(knob_scroll));
+        sps.vScroll = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("ui/scroll_horizontal.png"))));
+        sps.vScrollKnob = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("ui/knob_scroll.png"))));
 
-        // list stuff
-        List.ListStyle listS = new List.ListStyle();
-        listS.font = font;
-        listS.fontColorSelected = Color.BLACK;
-        listS.fontColorUnselected = Color.GRAY;
-        listS.selection = new TextureRegionDrawable(new TextureRegion(tfBackground));
-        List list2 = new List(listS);
+        // List Style
+        List.ListStyle listStyle = new List.ListStyle();
+        listStyle.font = font;
+        listStyle.fontColorSelected = Color.BLACK;
+        listStyle.fontColorUnselected = Color.GRAY;
+        listStyle.selection = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("ui/tfbackground.png"))));
 
-        list2.setItems(Game.modManager.modList);
-        list2.pack();
-        ScrollPane scrollPane = new ScrollPane(list2, sps);
+        // List
+        List list = new List(listStyle);
+        list.setItems(Game.modManager.modList);
+        list.pack();
+
+        // Scroll Pane
+        ScrollPane scrollPane = new ScrollPane(list, sps);
         scrollPane.addListener(new ClickListener()
         {
             public void clicked(InputEvent event, float x, float y)
             {
-               selectMod((Mod)list2.getSelected());
+               selectMod((Mod)list.getSelected());
             }
         });
 
@@ -186,7 +182,6 @@ public class ModManagerScreen extends BaseScreen {
         versionLabel.setText(StringManager.get(baseString + "version") + mod.version);
         stateLabel.setText(StringManager.get(baseString + "modState") + mod.modState);
 
-
         selectedMod = mod;
 
         switch (mod.modState) {
@@ -210,7 +205,6 @@ public class ModManagerScreen extends BaseScreen {
 
     public void draw(float delta) {
         super.draw(delta);
-
         this.ui.draw();
     }
 
