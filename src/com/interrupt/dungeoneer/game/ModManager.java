@@ -109,11 +109,7 @@ public class ModManager {
     }
 
     private void loadExcludesList() {
-        Iterator var1 = this.modsFound.iterator();
-
-        while(var1.hasNext()) {
-            String path = (String)var1.next();
-
+        for (String path : modsFound) {
             try {
                 FileHandle modFile = Game.getInternal(path + "/data/excludes.dat");
                 if (modFile.exists()) {
@@ -122,8 +118,8 @@ public class ModManager {
                         this.excludeFiles.addAll(excludes);
                     }
                 }
-            } catch (Exception var5) {
-                Gdx.app.error("Delver", "Error loading mod file " + path + "/data/excludes.dat");
+            } catch (Exception ex) {
+                Gdx.app.error("NodManager", "Error loading mod file " + path + "/data/excludes.dat");
             }
         }
 
@@ -131,11 +127,8 @@ public class ModManager {
 
     public EntityManager loadEntityManager() {
         EntityManager entityManager = null;
-        Iterator var2 = this.modsFound.iterator();
 
-        while(var2.hasNext()) {
-            String path = (String)var2.next();
-
+        for (String path : modsFound) {
             try {
                 FileHandle modFile = Game.getInternal(path + "/data/entities.dat");
                 if (modFile.exists() && !this.pathIsExcluded(path + "/data/entities.dat")) {
@@ -146,8 +139,8 @@ public class ModManager {
                         entityManager.merge(thisModManager);
                     }
                 }
-            } catch (Exception var6) {
-                Gdx.app.error("Delver", "Error loading mod file " + path + "/data/entities.dat");
+            } catch (Exception ex) {
+                Gdx.app.error("NodManager", "Error loading mod file " + path + "/data/entities.dat");
             }
         }
 
@@ -156,11 +149,8 @@ public class ModManager {
 
     public ItemManager loadItemManager() {
         ItemManager itemManager = null;
-        Iterator var2 = this.modsFound.iterator();
 
-        while(var2.hasNext()) {
-            String path = (String)var2.next();
-
+        for (String path : modsFound) {
             try {
                 FileHandle modFile = Game.getInternal(path + "/data/items.dat");
                 if (modFile.exists() && !this.pathIsExcluded(path + "/data/items.dat")) {
@@ -171,8 +161,8 @@ public class ModManager {
                         itemManager.merge(thisModManager);
                     }
                 }
-            } catch (Exception var6) {
-                Gdx.app.error("Delver", "Error loading mod file " + path + "/data/items.dat");
+            } catch (Exception ex) {
+                Gdx.app.error("NodManager", "Error loading mod file " + path + "/data/items.dat");
             }
         }
 
@@ -181,11 +171,8 @@ public class ModManager {
 
     public MonsterManager loadMonsterManager() {
         MonsterManager monsterManager = null;
-        Iterator var2 = this.modsFound.iterator();
 
-        while(var2.hasNext()) {
-            String path = (String)var2.next();
-
+        for (String path : modsFound) {
             try {
                 FileHandle modFile = Game.getInternal(path + "/data/monsters.dat");
                 if (modFile.exists() && !this.pathIsExcluded(path + "/data/monsters.dat")) {
@@ -196,8 +183,8 @@ public class ModManager {
                         monsterManager.merge(thisModManager);
                     }
                 }
-            } catch (Exception var6) {
-                Gdx.app.error("Delver", "Error loading mod file " + path + "/data/monsters.dat");
+            } catch (Exception ex) {
+                Gdx.app.error("NodManager", "Error loading mod file " + path + "/data/monsters.dat");
             }
         }
 
@@ -206,11 +193,8 @@ public class ModManager {
 
     public TextureAtlas[] getTextureAtlases(String filename) {
         ArrayMap<String, TextureAtlas> combinedAtlases = new ArrayMap();
-        Iterator var3 = this.modsFound.iterator();
 
-        while(var3.hasNext()) {
-            String path = (String)var3.next();
-
+        for (String path : modsFound) {
             try {
                 FileHandle modFile = Game.getInternal(path + "/data/" + filename);
                 if (modFile.exists() && !this.pathIsExcluded(path + "/data/" + filename)) {
@@ -220,8 +204,8 @@ public class ModManager {
                         combinedAtlases.put(atlases[i].name, atlases[i]);
                     }
                 }
-            } catch (Exception var8) {
-                Gdx.app.error("Delver", "Error loading mod file " + path + "/" + filename);
+            } catch (Exception ex) {
+                Gdx.app.error("NodManager", "Error loading mod file " + path + "/" + filename);
             }
         }
 
@@ -236,11 +220,8 @@ public class ModManager {
 
     public TileManager loadTileManager() {
         TileManager combinedTileManager = new TileManager();
-        Iterator var2 = this.modsFound.iterator();
 
-        while(var2.hasNext()) {
-            String path = (String)var2.next();
-
+        for (String path : modsFound) {
             try {
                 FileHandle modFile = Game.getInternal(path + "/data/tiles.dat");
                 if (modFile.exists() && !this.pathIsExcluded(path + "/data/tiles.dat")) {
@@ -253,8 +234,8 @@ public class ModManager {
                         combinedTileManager.tiles.putAll(tileManager.tiles);
                     }
                 }
-            } catch (Exception var6) {
-                Gdx.app.error("Delver", "Error loading mod file " + path + "/data/tiles.dat");
+            } catch (Exception ex) {
+                Gdx.app.error("NodManager", "Error loading mod file " + path + "/data/tiles.dat");
             }
         }
 
@@ -263,19 +244,16 @@ public class ModManager {
 
     public LerpedAnimationManager loadAnimationManager() {
         LerpedAnimationManager animationManager = new LerpedAnimationManager();
-        Iterator var2 = this.modsFound.iterator();
 
-        while(var2.hasNext()) {
-            String path = (String)var2.next();
-
+        for (String path : modsFound) {
             try {
                 FileHandle modFile = Game.getInternal(path + "/data/animations.dat");
                 if (modFile.exists() && !this.pathIsExcluded(path + "/data/animations.dat")) {
                     LerpedAnimationManager modManager = (LerpedAnimationManager)Game.fromJson(LerpedAnimationManager.class, modFile);
                     animationManager.animations.putAll(modManager.animations);
                 }
-            } catch (Exception var6) {
-                Gdx.app.error("Delver", "Error loading mod file " + path + "/data/animations.dat");
+            } catch (Exception ex) {
+                Gdx.app.error("ModManager", "Error loading mod file " + path + "/data/animations.dat");
             }
         }
 
@@ -285,11 +263,8 @@ public class ModManager {
 
     public HashMap<String, LocalizedString> loadLocalizedStrings() {
         HashMap<String, LocalizedString> combinedLocalizedStrings = new HashMap();
-        Iterator var2 = this.modsFound.iterator();
 
-        while(var2.hasNext()) {
-            String path = (String)var2.next();
-
+        for (String path : modsFound) {
             try {
                 FileHandle modFile = Game.getInternal(path + "/data/strings.dat");
                 if (modFile.exists() && !this.pathIsExcluded(path + "/data/strings.dat")) {
@@ -298,8 +273,8 @@ public class ModManager {
                         combinedLocalizedStrings.putAll(localizedStrings);
                     }
                 }
-            } catch (Exception var6) {
-                Gdx.app.error("Delver", "Error loading mod file " + path + "/data/strings.dat");
+            } catch (Exception ex) {
+                Gdx.app.error("ModManager", "Error loading mod file " + path + "/data/strings.dat");
             }
         }
 
@@ -308,10 +283,8 @@ public class ModManager {
 
     public GenTheme loadTheme(String filename) {
         GenTheme combinedTheme = new GenTheme();
-        Iterator var3 = this.modsFound.iterator();
 
-        while(var3.hasNext()) {
-            String path = (String)var3.next();
+        for (String path : modsFound) {
             FileHandle modFile = Game.getInternal(path + "/" + filename);
             if (modFile.exists() && !this.pathIsExcluded(path + "/" + filename)) {
                 GenTheme theme = (GenTheme)Game.fromJson(GenTheme.class, modFile);
@@ -374,10 +347,8 @@ public class ModManager {
 
     public FileHandle findFile(String filename) {
         FileHandle foundHandle = null;
-        Iterator var3 = this.modsFound.iterator();
 
-        while(var3.hasNext()) {
-            String path = (String)var3.next();
+        for (String path : modsFound) {
             if (!this.pathIsExcluded(path + "/" + filename)) {
                 FileHandle modFile = Game.getInternal(path + "/" + filename);
                 if (modFile.exists()) {
@@ -387,7 +358,7 @@ public class ModManager {
         }
 
         if (foundHandle == null) {
-            Gdx.app.error("Delver", "Could not find file in any mods: " + filename);
+            Gdx.app.error("ModManager", "Could not find file in any mods: " + filename);
         }
 
         return foundHandle;

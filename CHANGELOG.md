@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - A scrollable list that replaces the.. whatever we had before in the mod manager screen
 
 ### Changed
+- Minor cleanup
 - Moved around strings in `strings.dat`
 
 ## [1.4.0] - 2017-08-15
