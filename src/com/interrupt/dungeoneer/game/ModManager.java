@@ -31,7 +31,7 @@ public class ModManager {
     public String MOD_INFO_FILE = "mod_info.json";
 
     public ModManager() {
-        this.modsFound.add(".");
+        this.modsFound.add("."); // base game
 
         if(new File("mods").exists()) { // does mods folder exist
             File[] directories = new File("mods").listFiles(File::isDirectory);
