@@ -366,7 +366,7 @@ public class MainMenuScreen
 
         this.selectedSaveTable = selected;
 
-        if(count > 1) {
+        if(count > 1 && selectedSave != null) {
             GameApplication.SetScreen(new LoadingScreen(saveGames[selectedSave] == null ? StringManager.get("screens.MainMenuScreen.creatingDungeon") : StringManager.get("screens.MainMenuScreen.loadingSaveSlot"), selectedSave));
         }
 
