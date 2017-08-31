@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.5.0] - 2017-08-31
 ### Added
 - Double tapping a save will now load it in the main menu
 - `Delete` key prompts to erase save file in the main menu
