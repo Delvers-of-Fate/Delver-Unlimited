@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
+- Double tapping a save will now load it in the main menu
 - `Delete` key prompts to erase save file in the main menu
 - Padding for buttons in `OptionsScreen`
 - Made the done button in the level up overlay translatable

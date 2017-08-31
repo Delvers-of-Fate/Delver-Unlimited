@@ -224,7 +224,7 @@ public class MainMenuScreen
             {
                 public void clicked(InputEvent event, float x, float y)
                 {
-                    MainMenuScreen.this.selectSaveButtonEvent(i, t);
+                        MainMenuScreen.this.selectSaveButtonEvent(i, t, getTapCount());
                 }
             });
             t.setColor(Color.GRAY);
@@ -353,8 +353,9 @@ public class MainMenuScreen
         super.tick(delta);
     }
 
-    private void selectSaveButtonEvent(int saveLoc, Table selected)
+    private void selectSaveButtonEvent(int saveLoc, Table selected, int count)
     {
+
         isSelected = false;
 
         if(this.selectedSaveTable == selected) {
@@ -364,6 +365,11 @@ public class MainMenuScreen
         }
 
         this.selectedSaveTable = selected;
+
+        if(count > 1) {
+            GameApplication.SetScreen(new LoadingScreen(saveGames[selectedSave] == null ? StringManager.get("screens.MainMenuScreen.creatingDungeon") : StringManager.get("screens.MainMenuScreen.loadingSaveSlot"), selectedSave));
+        }
+
         for (int i = 0; i < this.saveSlotUi.size; i++) {
             this.saveSlotUi.get(i).setColor(Color.GRAY);
         }
@@ -381,7 +387,6 @@ public class MainMenuScreen
         } else {
             selectedSave = null;
         }
-
 
         if(selectedSave != null && saveGames[selectedSave] != null && !isSelected) {
             this.deleteButton.setVisible(true);
