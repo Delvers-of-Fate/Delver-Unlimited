@@ -6,13 +6,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
+- `Delete` key prompts to erase save file in the main menu
 - Padding for buttons in `OptionsScreen`
 - Made the done button in the level up overlay translatable
 - A scrollable list that replaces the.. whatever we had before in the mod manager screen
+- Fully skipping fade when loading save
 
 ### Changed
 - Minor cleanup
 - Moved around strings in `strings.dat`
+
+### Fixed
+- Select save not resetting in main menu
 
 ## [1.4.0] - 2017-08-15
 ### Added

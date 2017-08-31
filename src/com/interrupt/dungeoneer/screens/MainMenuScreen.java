@@ -28,6 +28,7 @@ import com.interrupt.dungeoneer.game.Colors;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Progression;
+import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.managers.StringManager;
 import net.cotd.delverunlimited.Config;
 
@@ -58,8 +59,7 @@ public class MainMenuScreen
     float fadeFactor = 1.0F;
     private int[] saveFiles = {0, 1, 2};
     private boolean escapePressed = false;
-    boolean isSelected = false;
-
+    private boolean isSelected = false;
     public MainMenuScreen()
     {
         this.dungeonInfo = Game.buildLevelLayout();
@@ -82,13 +82,17 @@ public class MainMenuScreen
 
         this.fullTable = new Table(this.skin);
         this.fullTable.setFillParent(true);
-        this.fullTable.align(2);
+        this.fullTable.align(Align.top);
 
         this.buttonTable = new Table();
 
         this.ui.addActor(this.fullTable);
 
         Gdx.input.setInputProcessor(this.ui);
+
+        isSelected = false;
+        selectedSaveTable = null;
+        selectedSave = null;
     }
 
     private void makeContent()
@@ -135,7 +139,7 @@ public class MainMenuScreen
             }
         });
         this.fullTable.row();
-        this.fullTable.add(StringManager.get("screens.MainMenuScreen.selectSaveSlot")).padTop(3F).padBottom(3F  );
+        this.fullTable.add(StringManager.get("screens.MainMenuScreen.selectSaveSlot")).padTop(3F).padBottom(3F);
         this.fullTable.row();
 
         this.buttonTable.clearChildren();
@@ -175,13 +179,13 @@ public class MainMenuScreen
                 t2.add(locationLabel).align(8).size(220.0F, rowHeight).padTop(2.0F);
                 t2.row();
 
-                Image goldIcon = new Image(new TextureRegionDrawable(com.interrupt.dungeoneer.gfx.TextureAtlas.cachedAtlases.get("item").sprite_regions[89]));
+                Image goldIcon = new Image(new TextureRegionDrawable(TextureAtlas.cachedAtlases.get("item").sprite_regions[89]));
                 goldIcon.setAlign(8);
 
-                Image skullIcon = new Image(new TextureRegionDrawable(com.interrupt.dungeoneer.gfx.TextureAtlas.cachedAtlases.get("item").sprite_regions[56]));
+                Image skullIcon = new Image(new TextureRegionDrawable(TextureAtlas.cachedAtlases.get("item").sprite_regions[56]));
                 skullIcon.setAlign(8);
 
-                Image orbIcon = new Image(new TextureRegionDrawable(com.interrupt.dungeoneer.gfx.TextureAtlas.cachedAtlases.get("item").sprite_regions[59]));
+                Image orbIcon = new Image(new TextureRegionDrawable(TextureAtlas.cachedAtlases.get("item").sprite_regions[59]));
                 orbIcon.setAlign(8);
 
                 Label goldLabel = new Label(progress[i].gold + "", this.skin);
@@ -288,10 +292,8 @@ public class MainMenuScreen
         this.renderer.uiBatch.begin();
 
         this.renderer.uiBatch.end();
-        if(!Config.skipIntro) {
-            if (this.fadeFactor < 1.0F) {
-                this.renderer.drawFlashOverlay(this.fadeColor.set(0.0F, 0.0F, 0.0F, 1.0F - this.fadeFactor));
-            }
+        if (this.fadeFactor < 1.0F) {
+            this.renderer.drawFlashOverlay(this.fadeColor.set(0.0F, 0.0F, 0.0F, 1.0F - this.fadeFactor));
         }
 
     }
@@ -334,10 +336,9 @@ public class MainMenuScreen
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.F5)) {
             GameApplication.SetScreen(new MainMenuScreen());
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.FORWARD_DEL)) {
-                if(selectedSave != null) {
+                if(selectedSave != null && !isSelected) {
                     GameApplication.SetScreen(new ConfirmScreen(selectedSave));
                 }
-
         }
 
         this.ui.act(delta);
@@ -410,6 +411,8 @@ public class MainMenuScreen
             {
                 if(!Config.skipIntro) {
                     MainMenuScreen.this.fadingOut = true;
+                } else {
+                    GameApplication.SetScreen(new LoadingScreen(saveGames[selectedSave] == null ? StringManager.get("screens.MainMenuScreen.creatingDungeon") : StringManager.get("screens.MainMenuScreen.loadingSaveSlot"), selectedSave));
                 }
 
                 return true;
@@ -418,7 +421,7 @@ public class MainMenuScreen
         {
             public boolean act(float v)
             {
-                GameApplication.SetScreen(new LoadingScreen(saveGames[selectedSave.intValue()] == null ? StringManager.get("screens.MainMenuScreen.creatingDungeon") : StringManager.get("screens.MainMenuScreen.loadingSaveSlot"), selectedSave.intValue()));
+                GameApplication.SetScreen(new LoadingScreen(saveGames[selectedSave] == null ? StringManager.get("screens.MainMenuScreen.creatingDungeon") : StringManager.get("screens.MainMenuScreen.loadingSaveSlot"), selectedSave));
                 return true;
             }
         })));
