@@ -113,6 +113,10 @@ public class ConfirmScreen extends BaseScreen {
             GameApplication.SetScreen(new MainMenuScreen());
         }
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            confirmButtonEvent();
+        }
+
         super.tick(delta);
     }
 

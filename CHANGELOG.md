@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Changed
+- Pressing `enter` in the confirm save screen
+
 ### Fixed
 - Fixed erasing a save which already is empty
 
