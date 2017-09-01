@@ -336,7 +336,7 @@ public class MainMenuScreen
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.F5)) {
             GameApplication.SetScreen(new MainMenuScreen());
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.FORWARD_DEL)) {
-                if(selectedSave != null && !isSelected) {
+                if(selectedSave != null && saveGames[selectedSave] != null && !isSelected) {
                     GameApplication.SetScreen(new ConfirmScreen(selectedSave));
                 }
         }
