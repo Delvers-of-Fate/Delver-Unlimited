@@ -3,6 +3,7 @@ package com.interrupt.dungeoneer.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Graphics.DisplayMode;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -270,7 +271,7 @@ public class OptionsScreen extends BaseScreen {
         }
 
         this.fontSize = (float)((int)this.fontSize);
-        if (!Gdx.input.isKeyPressed(131) && !Gdx.input.isKeyPressed(4)) {
+        if (!Gdx.input.isKeyPressed(131)) {
             this.ignoreClosePress = false;
         } else if (!this.ignoreClosePress) {
             this.saveAndClose();
@@ -281,7 +282,7 @@ public class OptionsScreen extends BaseScreen {
         super.tick(delta);
     }
 
-    public void saveAndClose() {
+    private void saveAndClose() {
         this.saveOptions();
         GameApplication.SetScreen(new MainMenuScreen());
     }
