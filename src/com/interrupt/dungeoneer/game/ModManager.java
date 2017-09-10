@@ -20,7 +20,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.Iterator;
 
 public class ModManager {
     public Array<String> modsFound = new Array(); // MODS LOAD FROM THIS ARRAY!!
