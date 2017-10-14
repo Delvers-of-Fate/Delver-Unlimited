@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Changed
 - Pressing `enter` in the confirm save screen
+- Removed duplicate found mod note for workshop mods
 
 ### Fixed
 - Fixed erasing a save which already is empty

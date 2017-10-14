@@ -110,7 +110,7 @@ public class LevelUpOverlay extends WindowOverlay {
         this.buttonOrder.clear();
         this.valueLabels.clear();
         this.startingValues.clear();
-        this.doneBtn = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("overlays.LevelUpOverlay.done")), this.skin.get(TextButtonStyle.class));
+        this.doneBtn = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("overlays.LevelUpOverlay.done")), this.skin);
         this.doneBtn.setWidth(200.0F);
         this.doneBtn.setHeight(50.0F);
         if (this.selectedAttribute.equals("")) {
