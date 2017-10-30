@@ -7,21 +7,17 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Cell;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorFrame;
+import com.interrupt.dungeoneer.editor.EditorFrame.MoveMode;
 import com.interrupt.dungeoneer.editor.EditorRightClickEntitiesMenu;
 import com.interrupt.dungeoneer.editor.EditorRightClickMenu;
-import com.interrupt.dungeoneer.editor.EditorFrame.MoveMode;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuAccelerator;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuItem;
 import com.interrupt.dungeoneer.editor.ui.menu.Scene2dMenu;
@@ -30,10 +26,15 @@ import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.generator.RoomGenerator;
+import net.cotd.delverunlimited.helper.history.History;
+import net.cotd.delverunlimited.helper.history.HistoryHelper;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileReader;
 import java.util.Iterator;
-import javax.swing.JFrame;
 
 public class EditorUi {
     Stage stage;
@@ -52,8 +53,12 @@ public class EditorUi {
     ActionListener pickAction;
     ActionListener uploadModAction;
     ActionListener setThemeAction;
+    ActionListener clearHistory;
+    ActionListener openRightClickMenu;
     private Vector2 propertiesSize = new Vector2();
     Viewport viewport;
+
+    private static MenuItem historyBar;
 
     private ActionListener makeRoomGeneratorAction(final String generatorType, final EditorFrame editorFrame) {
         return new ActionListener() {
@@ -69,6 +74,15 @@ public class EditorUi {
         };
     }
 
+    private ActionListener openRightClickMenu(History history) {
+        return new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                File file = new File(history.levelAbsolutePath);
+                Editor.openInEditor(file, true);
+            }
+        };
+    }
+
     public EditorUi(final Editor editor, final EditorFrame editorFrame) {
         defaultSkin = new Skin(Game.getInternal("ui/editor/HoloSkin/Holo-dark-hdpi.json"), new TextureAtlas(Game.getInternal("ui/editor/HoloSkin/Holo-dark-hdpi.atlas")));
         mediumSkin = new Skin(Game.getInternal("ui/editor/HoloSkin/Holo-dark-mdpi.json"), new TextureAtlas(Game.getInternal("ui/editor/HoloSkin/Holo-dark-mdpi.atlas")));
@@ -78,6 +92,9 @@ public class EditorUi {
         this.mainTable = new Table();
         this.mainTable.setFillParent(true);
         this.mainTable.align(10);
+
+        historyBar = new MenuItem("History", smallSkin);
+
         this.newWindowAction = new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 NewLevelDialog newLevelDialog = new NewLevelDialog(EditorUi.smallSkin) {
@@ -126,6 +143,13 @@ public class EditorUi {
                 editorFrame.doPick();
             }
         };
+
+        this.clearHistory = new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                clearHistory();
+            }
+        };
+
         this.menuBar = new Scene2dMenuBar(smallSkin);
         this.menuBar.addItem(new MenuItem("File", smallSkin)
                 .addItem(new MenuItem("New", smallSkin, this.newWindowAction).setAccelerator(new MenuAccelerator(42, true, false)))
@@ -191,9 +215,17 @@ public class EditorUi {
                 .addItem(new MenuItem("Set Theme", smallSkin, this.setThemeAction)));
         if (SteamApi.api.isAvailable()) {
             this.menuBar.addItem(new MenuItem("Mods", smallSkin)
-
                     .addItem(new MenuItem("Upload Mod to Workshop", smallSkin, this.uploadModAction)));
+        } else {
+            Gdx.app.log("SteamApi", "The Steam API has not been started, uploading to workshop disabled!");
         }
+
+        for (History history : HistoryHelper.getObjectJson()) {
+            historyBar.addItem(new MenuItem(history.toString(), smallSkin, this.openRightClickMenu(history)));
+        }
+
+       // historyBar.addItem(new MenuItem("Clear All", smallSkin, this.clearHistory));
+        this.menuBar.addItem(historyBar);
         this.menuBar.pack();
 
         this.mainTable.setZIndex(1000);
@@ -356,5 +388,10 @@ public class EditorUi {
 
     public static Skin getSmallSkin() {
         return smallSkin;
+    }
+
+    private static void clearHistory()
+    {
+        historyBar.clearListeners();
     }
 }

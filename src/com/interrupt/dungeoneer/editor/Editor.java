@@ -14,6 +14,8 @@ import com.interrupt.dungeoneer.game.Level;
 import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import net.cotd.delverunlimited.helper.FileChooserHelper;
+import net.cotd.delverunlimited.helper.history.History;
+import net.cotd.delverunlimited.helper.history.HistoryHelper;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -22,10 +24,10 @@ import java.io.File;
 import java.util.Timer;
 
 public class Editor {
-    private EditorFrame editorFrame;
+    private static EditorFrame editorFrame;
     private final JFrame frame = new JFrame("DelvEdit");
-    private String currentFileName = null;
-    private String currentDirectory = null;
+    private static String currentFileName = null;
+    private static String currentDirectory = null;
     public ActionListener saveAction;
     public ActionListener saveAsAction;
     public ActionListener openAction;
@@ -56,7 +58,7 @@ public class Editor {
     public ActionListener flattenCeiling;
     public ActionListener toggleSimulation;
     public ActionListener exitAction;
-    private Timer saveMessageTimer = new Timer();
+    private static Timer saveMessageTimer = new Timer();
 
     public Editor(LwjglApplicationConfiguration config) {
         this.frame.setDefaultCloseOperation(2);
@@ -124,68 +126,7 @@ public class Editor {
         };
         this.openAction = new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                if(Editor.this.currentDirectory == null) {
-                    Editor.this.currentDirectory = (new FileHandle(".")).file().getAbsolutePath();
-                    Editor.this.currentDirectory = Editor.this.currentDirectory.substring(0, Editor.this.currentDirectory.length() - 2);
-                }
-
-                File selectedFile = FileChooserHelper.selectFileDialog(new File(currentDirectory));
-
-                try {
-                    if (selectedFile == null) throw new NullPointerException();
-                    Editor.this.currentDirectory = selectedFile.getParent(); // FULL PATH
-                    Editor.this.currentFileName = selectedFile.getName();
-                    Editor.this.saveMessageTimer.cancel();
-                    String file = Editor.this.currentFileName;
-                    String dir = Editor.this.currentDirectory;
-                    FileHandle level = Gdx.files.getFileHandle(selectedFile.getAbsolutePath(), FileType.Absolute);
-                    if (level.exists()) {
-                        Editor.this.editorFrame.curFileName = level.path();
-                        Scene2dMenuBar.setTitleLabel(Editor.this.currentFileName);
-                        if (file.endsWith(".png")) {
-                            String heightFile = dir + file.replace(".png", "-height.png");
-                            if (!Gdx.files.getFileHandle(heightFile, FileType.Absolute).exists()) {
-                                heightFile = dir + file.replace(".png", "_height.png");
-                                if (!Gdx.files.getFileHandle(heightFile, FileType.Absolute).exists()) {
-                                    heightFile = null;
-                                }
-                            }
-
-                            Level openLevel = new Level();
-                            openLevel.loadForEditor(dir + file, heightFile);
-                            Editor.this.editorFrame.level = openLevel;
-                            Editor.this.editorFrame.refresh();
-                            Editor.this.editorFrame.camX = (float) (openLevel.width / 2);
-                            Editor.this.editorFrame.camZ = 4.5F;
-                            Editor.this.editorFrame.camY = (float) (openLevel.height / 2);
-                        } else {
-                            Level openLevelx;
-                            if (file.endsWith(".bin")) {
-                                openLevelx = KryoSerializer.loadLevel(level);
-                                openLevelx.init(Source.EDITOR);
-                                Editor.this.editorFrame.level = openLevelx;
-                                Editor.this.editorFrame.refresh();
-                                Editor.this.editorFrame.camX = (float) (openLevelx.width / 2);
-                                Editor.this.editorFrame.camZ = 4.5F;
-                                Editor.this.editorFrame.camY = (float) (openLevelx.height / 2);
-                            } else {
-                                openLevelx = (Level) Game.fromJson(Level.class, level);
-                                openLevelx.init(Source.EDITOR);
-                                Editor.this.editorFrame.level = openLevelx;
-                                Editor.this.editorFrame.refresh();
-                                Editor.this.editorFrame.camX = (float) (openLevelx.width / 2);
-                                Editor.this.editorFrame.camZ = 4.5F;
-                                Editor.this.editorFrame.camY = (float) (openLevelx.height / 2);
-                            }
-                        }
-
-                        Editor.this.editorFrame.history = new EditorHistory();
-                    }
-                } catch (NullPointerException ex) {
-                    Gdx.app.log("DelvEdit", "Selected null!");
-                } catch (Exception var8) {
-                    Gdx.app.error("DelvEdit", var8.getMessage());
-                }
+                openInEditor(null, false);
             }
         };
         this.rotateLeftAction = new ActionListener() {
@@ -325,6 +266,81 @@ public class Editor {
         Paint;
 
         private EditorMode() {
+        }
+    }
+
+    public static void openInEditor(File levelFile, boolean fromHistory) {
+        if(currentDirectory == null) {
+            currentDirectory = (new FileHandle(".")).file().getAbsolutePath();
+            currentDirectory = currentDirectory.substring(0, currentDirectory.length() - 2);
+        }
+
+        File selectedFile = null;
+        if (levelFile == null) {
+            selectedFile = FileChooserHelper.selectFileDialog(new File(currentDirectory));
+            if (selectedFile != null) {
+                HistoryHelper.addHistory(new History(selectedFile.getName(), selectedFile.getAbsolutePath()));
+            }
+        } else {
+            if (fromHistory) {
+                selectedFile = levelFile;
+            }
+        }
+
+        try {
+            if (selectedFile == null) throw new NullPointerException();
+            currentDirectory = selectedFile.getParent(); // C:\delverpath
+            currentFileName = selectedFile.getName();    // file_name.bin
+            saveMessageTimer.cancel();
+            String file = currentFileName;
+            String dir = currentDirectory;
+            FileHandle level = Gdx.files.getFileHandle(selectedFile.getAbsolutePath(), FileType.Absolute);
+            if (level.exists()) {
+                editorFrame.curFileName = level.path();
+                Scene2dMenuBar.setTitleLabel(currentFileName);
+                if (file.endsWith(".png")) {
+                    String heightFile = dir + file.replace(".png", "-height.png");
+                    if (!Gdx.files.getFileHandle(heightFile, FileType.Absolute).exists()) {
+                        heightFile = dir + file.replace(".png", "_height.png");
+                        if (!Gdx.files.getFileHandle(heightFile, FileType.Absolute).exists()) {
+                            heightFile = null;
+                        }
+                    }
+
+                    Level openLevel = new Level();
+                    openLevel.loadForEditor(dir + file, heightFile);
+                    editorFrame.level = openLevel;
+                    editorFrame.refresh();
+                    editorFrame.camX = (float) (openLevel.width / 2);
+                    editorFrame.camZ = 4.5F;
+                    editorFrame.camY = (float) (openLevel.height / 2);
+                } else {
+                    Level openLevelx;
+                    if (file.endsWith(".bin")) {
+                        openLevelx = KryoSerializer.loadLevel(level);
+                        openLevelx.init(Source.EDITOR);
+                        editorFrame.level = openLevelx;
+                        editorFrame.refresh();
+                        editorFrame.camX = (float) (openLevelx.width / 2);
+                        editorFrame.camZ = 4.5F;
+                        editorFrame.camY = (float) (openLevelx.height / 2);
+                    } else {
+                        openLevelx = (Level) Game.fromJson(Level.class, level);
+                        openLevelx.init(Source.EDITOR);
+                        editorFrame.level = openLevelx;
+                        editorFrame.refresh();
+                        editorFrame.camX = (float) (openLevelx.width / 2);
+                        editorFrame.camZ = 4.5F;
+                        editorFrame.camY = (float) (openLevelx.height / 2);
+                    }
+                }
+
+                editorFrame.history = new EditorHistory();
+            }
+        } catch (NullPointerException ex) {
+            Gdx.app.log("DelvEdit", "Selected null!");
+        } catch (Exception var8) {
+            Gdx.app.error("DelvEdit", var8.getMessage());
         }
     }
 }
