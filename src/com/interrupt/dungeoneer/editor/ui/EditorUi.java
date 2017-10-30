@@ -1,6 +1,7 @@
 package com.interrupt.dungeoneer.editor.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -9,19 +10,15 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.interrupt.api.steam.SteamApi;
-import com.interrupt.dungeoneer.editor.Editor;
+import com.interrupt.dungeoneer.editor.*;
 import com.interrupt.dungeoneer.editor.EditorFrame;
 import com.interrupt.dungeoneer.editor.EditorFrame.MoveMode;
 import com.interrupt.dungeoneer.editor.EditorRightClickEntitiesMenu;
 import com.interrupt.dungeoneer.editor.EditorRightClickMenu;
-import com.interrupt.dungeoneer.editor.ui.menu.MenuAccelerator;
-import com.interrupt.dungeoneer.editor.ui.menu.MenuItem;
-import com.interrupt.dungeoneer.editor.ui.menu.Scene2dMenu;
-import com.interrupt.dungeoneer.editor.ui.menu.Scene2dMenuBar;
+import com.interrupt.dungeoneer.editor.ui.menu.*;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
@@ -33,7 +30,6 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileReader;
 import java.util.Iterator;
 
 public class EditorUi {
@@ -47,18 +43,17 @@ public class EditorUi {
     private Table sidebarTable = null;
     private Cell propertiesCell = null;
     Scene2dMenu rightClickMenu;
-    Scene2dMenuBar menuBar;
+    static Scene2dMenuBar menuBar;
     ActionListener resizeWindowAction;
     ActionListener newWindowAction;
     ActionListener pickAction;
     ActionListener uploadModAction;
     ActionListener setThemeAction;
+    static MenuItem historyBar;
     ActionListener clearHistory;
     ActionListener openRightClickMenu;
     private Vector2 propertiesSize = new Vector2();
     Viewport viewport;
-
-    private static MenuItem historyBar;
 
     private ActionListener makeRoomGeneratorAction(final String generatorType, final EditorFrame editorFrame) {
         return new ActionListener() {
@@ -74,7 +69,7 @@ public class EditorUi {
         };
     }
 
-    private ActionListener openRightClickMenu(History history) {
+    private static ActionListener openRightClickMenu(History history) {
         return new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 File file = new File(history.levelAbsolutePath);
@@ -83,23 +78,32 @@ public class EditorUi {
         };
     }
 
+    private static ActionListener clearHistory(MenuItem item) {
+        return new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                item.subMenu.removeAll();
+                updateHistory(true);
+            }
+        };
+    }
+
     public EditorUi(final Editor editor, final EditorFrame editorFrame) {
         defaultSkin = new Skin(Game.getInternal("ui/editor/HoloSkin/Holo-dark-hdpi.json"), new TextureAtlas(Game.getInternal("ui/editor/HoloSkin/Holo-dark-hdpi.atlas")));
         mediumSkin = new Skin(Game.getInternal("ui/editor/HoloSkin/Holo-dark-mdpi.json"), new TextureAtlas(Game.getInternal("ui/editor/HoloSkin/Holo-dark-mdpi.atlas")));
         smallSkin = new Skin(Game.getInternal("ui/editor/HoloSkin/Holo-dark-ldpi.json"), new TextureAtlas(Game.getInternal("ui/editor/HoloSkin/Holo-dark-ldpi.atlas")));
-        this.viewport = new FillViewport((float)Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight());
+        this.viewport = new FillViewport((float) Gdx.graphics.getWidth(), (float) Gdx.graphics.getHeight());
         this.stage = new Stage(this.viewport);
         this.mainTable = new Table();
         this.mainTable.setFillParent(true);
         this.mainTable.align(10);
 
-        historyBar = new MenuItem("History", smallSkin);
+
 
         this.newWindowAction = new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 NewLevelDialog newLevelDialog = new NewLevelDialog(EditorUi.smallSkin) {
                     protected void result(Object object) {
-                        if (((Boolean)object)) {
+                        if (((Boolean) object)) {
                             editorFrame.createNewLevel(this.getLevelWidth(), this.getLevelHeight());
                             editor.createdNewLevel();
                         }
@@ -113,7 +117,7 @@ public class EditorUi {
             public void actionPerformed(ActionEvent event) {
                 NewLevelDialog newLevelDialog = new NewLevelDialog(EditorUi.smallSkin) {
                     protected void result(Object object) {
-                        if (((Boolean)object)) {
+                        if (((Boolean) object)) {
                             editorFrame.resizeLevel(this.getLevelWidth(), this.getLevelHeight());
                         }
 
@@ -141,12 +145,6 @@ public class EditorUi {
         this.pickAction = new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 editorFrame.doPick();
-            }
-        };
-
-        this.clearHistory = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                clearHistory();
             }
         };
 
@@ -220,16 +218,14 @@ public class EditorUi {
             Gdx.app.log("SteamApi", "The Steam API has not been started, uploading to workshop disabled!");
         }
 
-        for (History history : HistoryHelper.getObjectJson()) {
-            historyBar.addItem(new MenuItem(history.toString(), smallSkin, this.openRightClickMenu(history)));
-        }
+        historyBar = new MenuItem("History", smallSkin);
+        updateHistory(false);
 
-       // historyBar.addItem(new MenuItem("Clear All", smallSkin, this.clearHistory));
-        this.menuBar.addItem(historyBar);
-        this.menuBar.pack();
+        menuBar.addItem(historyBar);
+        menuBar.pack();
 
         this.mainTable.setZIndex(1000);
-        this.mainTable.add(this.menuBar);
+        this.mainTable.add(menuBar);
         this.stage.addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 Actor touched = EditorUi.this.stage.hit(x, y, false);
@@ -300,6 +296,30 @@ public class EditorUi {
                 return false;
             }
         });
+    }
+
+    public static void updateHistory(boolean clear)
+    {
+        if (historyBar.subMenu != null) {
+            historyBar.subMenu.removeAll();
+        }
+
+        if (clear) {
+            FileHandle file = Gdx.files.local(HistoryHelper.HISTORY_FILE_PATH);
+            file.delete();
+        }
+
+        /* Read from json */
+        History[] data = HistoryHelper.getObjectJson();
+        if (data != null) {
+            for (History history : data) {
+                historyBar.addItem(new MenuItem(history.toString(), smallSkin, openRightClickMenu(history)));
+            }
+        }
+
+        /* Add clear all button */
+        historyBar.addSeparator();
+        historyBar.addItem(new MenuItem("Clear All", smallSkin, clearHistory(historyBar)));
     }
 
     public void showEntityPropertiesMenu(EditorFrame editorFrame) {
@@ -390,8 +410,4 @@ public class EditorUi {
         return smallSkin;
     }
 
-    private static void clearHistory()
-    {
-        historyBar.clearListeners();
-    }
 }
