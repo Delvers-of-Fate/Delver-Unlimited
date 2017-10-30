@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- History menu in DelvEdit
+
 ### Changed
 - Pressing `enter` in the confirm save screen
 - Removed duplicate found mod note for workshop mods
