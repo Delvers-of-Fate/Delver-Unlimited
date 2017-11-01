@@ -115,7 +115,7 @@ public class EditorStarter
             } else if (arg.toLowerCase().contains("--msaa=")) {
                 Config.msaaSamples = Integer.parseInt(arg.substring(7));
 
-            } else if (arg.toLowerCase().equals("--steam")) {
+            } else if (arg.toLowerCase().equals("--no-steam")) {
                 Config.skipSteam = true;
 
             } else if (arg.toLowerCase().equals("--help")) {
@@ -129,7 +129,7 @@ public class EditorStarter
                 System.out.println("--height<int>          Set custom height.");
                 System.out.println("--borderless           Enable borderless mode.");
                 System.out.println("--msaa=<int>           Number of msaa samples.");
-                System.out.println("--steam                Disable Steamworks addon.");
+                System.out.println("--no-steam             Disable Steamworks addon.");
                 System.out.println("--help                 Displays this message.");
                 System.out.println();
 

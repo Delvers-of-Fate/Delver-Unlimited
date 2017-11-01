@@ -133,7 +133,7 @@ public class DesktopStarter
             } else if (arg.toLowerCase().contains("--msaa=")) {
                 Config.msaaSamples = Integer.parseInt(arg.substring(7));
 
-            } else if (arg.toLowerCase().equals("--steam")) {
+            } else if (arg.toLowerCase().equals("--no-steam")) {
                 Config.skipSteam = true;
 
             } else if (arg.toLowerCase().equals("--drawdebugboxes")) {
@@ -156,8 +156,8 @@ public class DesktopStarter
                 System.out.println("--height<int>          Set custom height.");
                 System.out.println("--borderless           Enable borderless mode.");
                 System.out.println("--msaa=<int>           Number of msaa samples.");
-                System.out.println("--steam                Disable Steamworks addon.");
-                System.out.println("--drawdebugboxes       Draws debug boxes?");
+                System.out.println("--no-steam             Disable Steamworks addon.");
+                System.out.println("--drawdebugboxes       Draws hitbox for all entities.");
                 System.out.println("--skipintro            Skips the intro videos.");
                 System.out.println("--save=<int>           Skips the main menu and goes strait to the selected save file, must be used with the above.");
                 System.out.println("--help                 Displays this message.");

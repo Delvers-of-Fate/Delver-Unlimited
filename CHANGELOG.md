@@ -4,13 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.6.0] - 2017-11-01
 ### Added
 - History menu in DelvEdit
 
 ### Changed
 - Pressing `enter` in the confirm save screen
 - Removed duplicate found mod note for workshop mods
+- The `--steam` argument has been renamed to `--no-steam`
 
 ### Fixed
 - Fixed erasing a save which already is empty
