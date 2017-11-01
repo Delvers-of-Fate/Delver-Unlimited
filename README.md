@@ -11,7 +11,8 @@ Visit the [wiki](https://github.com/Council-of-the-Delverers/Delver-Unlimited/wi
 2. Override the files inside `delver.jar`
     * (Optional) override the files inside `DelvEdit.jar`
 
-Make sure you have Java 8 + JavaFX installed!
+* If you're also installing DMC-core, then install D-U first!
+* Make sure you have Java 8 + JavaFX installed!
 
 [YouTube tutorial & showcase](https://youtu.be/Q8BZuU8ka9g)
 
