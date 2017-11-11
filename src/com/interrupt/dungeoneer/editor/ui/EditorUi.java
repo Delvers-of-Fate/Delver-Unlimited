@@ -313,7 +313,9 @@ public class EditorUi {
         History[] data = HistoryHelper.getObjectJson();
         if (data != null) {
             for (History history : data) {
-                historyBar.addItem(new MenuItem(history.toString(), smallSkin, openRightClickMenu(history)));
+                if (history.verify()) {
+                    historyBar.addItem(new MenuItem(history.toString(), smallSkin, openRightClickMenu(history)));
+                }
             }
         }
 

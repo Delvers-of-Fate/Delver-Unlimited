@@ -15,7 +15,7 @@ public class HistoryHelper {
     public static String HISTORY_FILE_PATH = "save" + File.separator + "history.json";
 
     private static File historyFile = new File(HISTORY_FILE_PATH);
-    private static Json gson = new Json();
+    private static Json json = new Json();
 
     private void HistoryHelper() {}
 
@@ -88,12 +88,22 @@ public class HistoryHelper {
         /* Parse json */
         History[] object = null;
         try {
-            object = gson.fromJson(History[].class, new FileReader(HISTORY_FILE_PATH));
+            object = json.fromJson(History[].class, new FileReader(HISTORY_FILE_PATH));
         } catch (Exception ex) {
             Gdx.app.error("HistoryHelper", ex.getMessage());
         }
 
+        /* Is it empty? */
         if (object == null) return null;
+
+        /* Verify the paths */
+        for (History history : object) {
+            FileHandle file = Gdx.files.absolute(history.levelAbsolutePath);
+
+            if (!file.exists()) {
+                history.error = true;
+            }
+        }
 
         return object;
     }
