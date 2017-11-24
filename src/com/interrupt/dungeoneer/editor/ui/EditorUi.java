@@ -9,16 +9,22 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.interrupt.api.steam.SteamApi;
-import com.interrupt.dungeoneer.editor.*;
+import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorFrame;
 import com.interrupt.dungeoneer.editor.EditorFrame.MoveMode;
 import com.interrupt.dungeoneer.editor.EditorRightClickEntitiesMenu;
 import com.interrupt.dungeoneer.editor.EditorRightClickMenu;
-import com.interrupt.dungeoneer.editor.ui.menu.*;
+import com.interrupt.dungeoneer.editor.ui.menu.MenuAccelerator;
+import com.interrupt.dungeoneer.editor.ui.menu.MenuItem;
+import com.interrupt.dungeoneer.editor.ui.menu.Scene2dMenu;
+import com.interrupt.dungeoneer.editor.ui.menu.Scene2dMenuBar;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
@@ -27,6 +33,7 @@ import net.cotd.delverunlimited.helper.history.History;
 import net.cotd.delverunlimited.helper.history.HistoryHelper;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -49,8 +56,8 @@ public class EditorUi {
     ActionListener pickAction;
     ActionListener uploadModAction;
     ActionListener setThemeAction;
+    ActionListener openWorkingDir;
     static MenuItem historyBar;
-    ActionListener clearHistory;
     ActionListener openRightClickMenu;
     private Vector2 propertiesSize = new Vector2();
     Viewport viewport;
@@ -147,11 +154,28 @@ public class EditorUi {
                 editorFrame.doPick();
             }
         };
+        this.openWorkingDir = new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                try {
+                    if (editor.currentDirectory.length() > 5) {
+                        File dirToOpen = new File(editor.currentDirectory);
+                        Desktop desktop = Desktop.getDesktop();
+
+
+                        desktop.open(dirToOpen);
+                    }
+
+                } catch (Exception ex) {
+                    Gdx.app.error("EditorUi", ex.getMessage());
+                }
+            }
+        };
 
         this.menuBar = new Scene2dMenuBar(smallSkin);
         this.menuBar.addItem(new MenuItem("File", smallSkin)
                 .addItem(new MenuItem("New", smallSkin, this.newWindowAction).setAccelerator(new MenuAccelerator(42, true, false)))
                 .addItem(new MenuItem("Open", smallSkin, editor.openAction).setAccelerator(new MenuAccelerator(43, true, false)))
+                .addItem(new MenuItem("Open working directory", smallSkin, this.openWorkingDir).setAccelerator(new MenuAccelerator(43, true, false)))
                 .addSeparator()
                 .addItem(new MenuItem("Save", smallSkin, editor.saveAction).setAccelerator(new MenuAccelerator(47, true, false)))
                 .addItem(new MenuItem("Save As . . .", smallSkin, editor.saveAsAction).setAccelerator(new MenuAccelerator(47, true, true)))

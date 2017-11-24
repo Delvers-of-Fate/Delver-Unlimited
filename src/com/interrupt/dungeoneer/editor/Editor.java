@@ -27,7 +27,7 @@ public class Editor {
     private static EditorFrame editorFrame;
     private final JFrame frame = new JFrame("DelvEdit");
     private static String currentFileName = null;
-    private static String currentDirectory = null;
+    public static String currentDirectory = null;
     public ActionListener saveAction;
     public ActionListener saveAsAction;
     public ActionListener openAction;

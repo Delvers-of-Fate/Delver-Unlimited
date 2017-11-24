@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - Checks for the history entries
+- `Open working directory` in DelvEdit
 
 ## [1.6.0] - 2017-11-01
 ### Added
@@ -20,7 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Fixed erasing a save which already is empty
 
-## [1.5.0] - 2017-08-31
+## [1.5.0] - 2017-08-31 
 ### Added
 - Double tapping a save will now load it in the main menu
 - `Delete` key prompts to erase save file in the main menu
