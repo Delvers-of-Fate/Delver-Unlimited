@@ -175,7 +175,7 @@ public class EditorUi {
         this.menuBar.addItem(new MenuItem("File", smallSkin)
                 .addItem(new MenuItem("New", smallSkin, this.newWindowAction).setAccelerator(new MenuAccelerator(42, true, false)))
                 .addItem(new MenuItem("Open", smallSkin, editor.openAction).setAccelerator(new MenuAccelerator(43, true, false)))
-                .addItem(new MenuItem("Open working directory", smallSkin, this.openWorkingDir).setAccelerator(new MenuAccelerator(43, true, false)))
+                .addItem(new MenuItem("Open working directory", smallSkin, this.openWorkingDir))
                 .addSeparator()
                 .addItem(new MenuItem("Save", smallSkin, editor.saveAction).setAccelerator(new MenuAccelerator(47, true, false)))
                 .addItem(new MenuItem("Save As . . .", smallSkin, editor.saveAsAction).setAccelerator(new MenuAccelerator(47, true, true)))
