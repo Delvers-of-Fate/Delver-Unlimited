@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ArrayMap;
 import com.interrupt.api.steam.SteamApi;
+import com.interrupt.api.steam.workshop.WorkshopModData;
 import com.interrupt.dungeoneer.generator.GenTheme;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimationManager;
@@ -25,9 +26,10 @@ public class ModManager {
     public Array<String> modsFound = new Array(); // MODS LOAD FROM THIS ARRAY!!
     public Array<String> excludeFiles = new Array();
     public Array<Mod> modList = new Array<Mod>();
-    public Array<ModInfo> modInfo = new Array<ModInfo>();
-    public String MOD_SETTINGS_FILE = "mod_settings.json";
-    public String MOD_INFO_FILE = "mod_info.json";
+
+    public final String MOD_SETTINGS_FILE = "mod_settings.json";
+    public final String MOD_INFO_FILE = "mod_info.json";
+    public final String MOD_INFO_FILE_ALT = "modInfo.json";
 
     public ModManager() {
         this.modsFound.add("."); // base game
@@ -69,26 +71,33 @@ public class ModManager {
         File modSettingsFile = new File(MOD_FOLDER_FULL + MOD_SETTINGS_FILE);
 
         /* DOES MOD.JSON EXIST */
-        if(!modInfoFile.exists() && !modInfoFile.isDirectory()) {
-            Gdx.app.log("ModManager", modFolder.toString() + " did not have a mod_info.json, but one will be created! Notify the developer of the mod to add support for Delver-Unlimited!");
-            ModInfo modInfo = new ModInfo(modFolder.getName().trim(), "Unknown", "Generated file", "Unknown", null);
-            String modFile = Game.toJson(modInfo, Mod.class);
-            try {
-                Files.write(Paths.get(MOD_FOLDER_FULL + MOD_INFO_FILE), modFile.getBytes());
-            } catch (Exception ex) {
-                Gdx.app.error("ModManager", ex.getMessage());
+        if (!modInfoFile.exists()) {
+            Gdx.app.log("ModManager", modFolder.toString() + " did not have a mod_info.json! Please advise the developer of the mod to add support for Delver-Unlimited!");
+
+            /* Parse modInfo.json, created by DelvEdit */
+            File modInfoAltFile = new File(MOD_FOLDER_FULL + MOD_INFO_FILE_ALT);
+            if (modInfoAltFile.exists()) {
+                Gdx.app.log("ModManager", modFolder.toString() + " has a " + MOD_INFO_FILE_ALT + "!");
+                WorkshopModData workshopModData = Game.fromJson(WorkshopModData.class, new FileHandle(modInfoAltFile));
+
+                ModInfo modInfo = new ModInfo(workshopModData.title, "Unknown", "Unknown", "Unknown", "https://steamcommunity.com/sharedfiles/filedetails/?id=" + workshopModData.workshopId);
+                String modFile = Game.toJson(modInfo, Mod.class);
+                try {
+                    Files.write(Paths.get(MOD_FOLDER_FULL + MOD_INFO_FILE), modFile.getBytes());
+                } catch (Exception ex) {
+                    Gdx.app.error("ModManager", ex.getMessage());
+                }
             }
         }
 
-        Gdx.app.log("ModManager.addMod()", modFolder.getAbsolutePath());
+        Gdx.app.log("ModManager", modFolder.getAbsolutePath());
 
         ModSettings settingsFile;
-        if(modSettingsFile.exists()) {
+        if (modSettingsFile.exists()) {
             settingsFile = Game.fromJson(ModSettings.class, new FileHandle(MOD_FOLDER_FULL + MOD_SETTINGS_FILE));
         } else {
             settingsFile = new ModSettings(ModSettings.ModState.Enabled, modFolder.toString());
-
-           String modFile = Game.toJson(settingsFile, Mod.class);
+            String modFile = Game.toJson(settingsFile, Mod.class);
 
             try {
                 Files.write(Paths.get(MOD_FOLDER_FULL + MOD_SETTINGS_FILE), modFile.getBytes());
@@ -100,7 +109,7 @@ public class ModManager {
         ModInfo infoFile = Game.fromJson(ModInfo.class, new FileHandle(modInfoFile));
         Mod finishedMod = new Mod(infoFile.name, infoFile.author, infoFile.description, infoFile.version, infoFile.url, settingsFile.modState, settingsFile.modPath);
 
-        if(finishedMod.modState == null) {
+        if (finishedMod.modState == null) {
             finishedMod.modState = ModSettings.ModState.Enabled;
         }
 
