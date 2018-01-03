@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
-import com.interrupt.dungeoneer.editor.ui.EditorUi;
 import com.interrupt.dungeoneer.game.Game;
 
 import java.io.File;
@@ -71,7 +70,7 @@ public class HistoryHelper {
             Gdx.app.error("HistoryHelper", ex.getMessage());
         }
 
-        EditorUi.updateHistory(false);
+       // EditorUi.updateHistory(false);
 
     }
 
