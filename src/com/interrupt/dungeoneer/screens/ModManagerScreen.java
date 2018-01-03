@@ -1,7 +1,6 @@
 package com.interrupt.dungeoneer.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -17,6 +16,7 @@ import com.badlogic.gdx.utils.Align;
 import com.interrupt.dungeoneer.GameApplication;
 import com.interrupt.dungeoneer.game.Colors;
 import com.interrupt.dungeoneer.game.Game;
+import com.interrupt.dungeoneer.overlays.OptionsOverlay;
 import com.interrupt.managers.StringManager;
 import net.cotd.delverunlimited.helper.Mod;
 import net.cotd.delverunlimited.helper.ModSettings;
@@ -116,7 +116,7 @@ public class ModManagerScreen extends BaseScreen {
         backButton.setColor(Colors.EXPLOSION);
         backButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-              //  GameApplication.SetScreen(new OptionsScreen());
+                GameApplication.SetScreen(new OverlayWrapperScreen(new OptionsOverlay(false, true)));
             }
         });
 
@@ -210,9 +210,6 @@ public class ModManagerScreen extends BaseScreen {
 
     public void tick(float delta) {
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-       //     GameApplication.SetScreen(new OptionsScreen());
-        }
 
         super.tick(delta);
     }

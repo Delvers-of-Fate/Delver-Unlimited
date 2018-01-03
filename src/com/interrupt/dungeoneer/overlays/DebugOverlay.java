@@ -390,7 +390,7 @@ public class DebugOverlay
     }
 
     protected void addHealItem(Table table) {
-        final Label name = new Label("REFRESH", (Label.LabelStyle)this.skin.get("input", Label.LabelStyle.class));
+        final Label name = new Label("HEAL", (Label.LabelStyle)this.skin.get("input", Label.LabelStyle.class));
 
         final Overlay thisOverlay = this;
 
