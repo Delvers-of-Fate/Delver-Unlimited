@@ -9,7 +9,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Checks for the history entries
 - `Open working directory` in DelvEdit
 - Improved support with mods that don't support the mod manager
-- Support for v1.0-beta
 
 ## [1.6.0] - 2017-11-01
 ### Added

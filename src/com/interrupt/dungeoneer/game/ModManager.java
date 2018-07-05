@@ -9,8 +9,10 @@ import com.interrupt.api.steam.workshop.WorkshopModData;
 import com.interrupt.dungeoneer.generator.GenTheme;
 import com.interrupt.dungeoneer.gfx.TextureAtlas;
 import com.interrupt.dungeoneer.gfx.animation.lerp3d.LerpedAnimationManager;
-import com.interrupt.dungeoneer.gfx.shaders.ShaderData;
-import com.interrupt.managers.*;
+import com.interrupt.managers.EntityManager;
+import com.interrupt.managers.ItemManager;
+import com.interrupt.managers.MonsterManager;
+import com.interrupt.managers.TileManager;
 import net.cotd.delverunlimited.helper.Mod;
 import net.cotd.delverunlimited.helper.ModInfo;
 import net.cotd.delverunlimited.helper.ModSettings;
@@ -85,15 +87,6 @@ public class ModManager {
                 } catch (Exception ex) {
                     Gdx.app.error("ModManager", ex.getMessage());
                 }
-            } else {
-                /* Generate mod info file */
-                ModInfo modInfo = new ModInfo(modFolder.getName().trim(), "Unknown", "Generated mod info file!", "Unknown", null);
-                String modFile = Game.toJson(modInfo, Mod.class);
-                try {
-                    Files.write(Paths.get(MOD_FOLDER_FULL + MOD_INFO_FILE), modFile.getBytes());
-                } catch (Exception ex) {
-                    Gdx.app.error("ModManager", ex.getMessage());
-                }
             }
         }
 
@@ -140,75 +133,69 @@ public class ModManager {
 
     }
 
-    public EntityManager loadEntityManager(String[] filenames) {
+    public EntityManager loadEntityManager() {
         EntityManager entityManager = null;
-        for (String filename : filenames) {
-            for (String path : this.modsFound) {
-                String filePath = path + "/data/" + filename;
-                try {
-                    FileHandle modFile = Game.getInternal(filePath);
-                    if (!modFile.exists() || this.pathIsExcluded(filePath)) continue;
-                    EntityManager thisModManager = Game.fromJson(EntityManager.class, modFile);
+
+        for (String path : modsFound) {
+            try {
+                FileHandle modFile = Game.getInternal(path + "/data/entities.dat");
+                if (modFile.exists() && !this.pathIsExcluded(path + "/data/entities.dat")) {
+                    EntityManager thisModManager = (EntityManager)Game.fromJson(EntityManager.class, modFile);
                     if (entityManager == null) {
                         entityManager = thisModManager;
-                        continue;
+                    } else if (thisModManager != null) {
+                        entityManager.merge(thisModManager);
                     }
-                    if (thisModManager == null) continue;
-                    entityManager.merge(thisModManager);
                 }
-                catch (Exception ex) {
-                    Gdx.app.error("Delver", "Error loading mod file: " + filePath);
-                }
+            } catch (Exception ex) {
+                Gdx.app.error("NodManager", "Error loading mod file " + path + "/data/entities.dat");
             }
         }
+
         return entityManager;
     }
 
-    public ItemManager loadItemManager(String[] filenames) {
+    public ItemManager loadItemManager() {
         ItemManager itemManager = null;
-        for (String filename : filenames) {
-            for (String path : this.modsFound) {
-                String filePath = path + "/data/" + filename;
-                try {
-                    FileHandle modFile = Game.getInternal(filePath);
-                    if (!modFile.exists() || this.pathIsExcluded(filePath)) continue;
-                    ItemManager thisModManager = Game.fromJson(ItemManager.class, modFile);
+
+        for (String path : modsFound) {
+            try {
+                FileHandle modFile = Game.getInternal(path + "/data/items.dat");
+                if (modFile.exists() && !this.pathIsExcluded(path + "/data/items.dat")) {
+                    ItemManager thisModManager = (ItemManager)Game.fromJson(ItemManager.class, modFile);
                     if (itemManager == null) {
                         itemManager = thisModManager;
-                        continue;
+                    } else if (thisModManager != null) {
+                        itemManager.merge(thisModManager);
                     }
-                    if (thisModManager == null) continue;
-                    itemManager.merge(thisModManager);
                 }
-                catch (Exception ex) {
-                    Gdx.app.error("Delver", "Error loading mod file: " + filePath);
-                }
+            } catch (Exception ex) {
+                Gdx.app.error("NodManager", "Error loading mod file " + path + "/data/items.dat");
             }
         }
+
         return itemManager;
     }
 
-    public MonsterManager loadMonsterManager(String[] filenames) {
+    public MonsterManager loadMonsterManager() {
         MonsterManager monsterManager = null;
-        for (String filename : filenames) {
-            for (String path : this.modsFound) {
-                String filePath = path + "/data/" + filename;
-                try {
-                    FileHandle modFile = Game.getInternal(filePath);
-                    if (!modFile.exists() || this.pathIsExcluded(filePath)) continue;
-                    MonsterManager thisModManager = Game.fromJson(MonsterManager.class, modFile);
+
+        for (String path : modsFound) {
+            try {
+                FileHandle modFile = Game.getInternal(path + "/data/monsters.dat");
+                if (modFile.exists() && !this.pathIsExcluded(path + "/data/monsters.dat")) {
+                    MonsterManager thisModManager = (MonsterManager)Game.fromJson(MonsterManager.class, modFile);
                     if (monsterManager == null) {
                         monsterManager = thisModManager;
-                        continue;
+                    } else if (thisModManager != null) {
+                        monsterManager.merge(thisModManager);
                     }
-                    if (thisModManager == null) continue;
-                    monsterManager.merge(thisModManager);
                 }
-                catch (Exception ex) {
-                    Gdx.app.error("Delver", "Error loading mod file: " + filePath);
-                }
+            } catch (Exception ex) {
+                Gdx.app.error("NodManager", "Error loading mod file " + path + "/data/monsters.dat");
             }
         }
+
         return monsterManager;
     }
 
@@ -219,7 +206,7 @@ public class ModManager {
             try {
                 FileHandle modFile = Game.getInternal(path + "/data/" + filename);
                 if (modFile.exists() && !this.pathIsExcluded(path + "/data/" + filename)) {
-                    TextureAtlas[] atlases = Game.fromJson(TextureAtlas[].class, modFile);
+                    TextureAtlas[] atlases = (TextureAtlas[])Game.fromJson(TextureAtlas[].class, modFile);
 
                     for(int i = 0; i < atlases.length; ++i) {
                         combinedAtlases.put(atlases[i].name, atlases[i]);
@@ -233,7 +220,7 @@ public class ModManager {
         TextureAtlas[] atlasArray = new TextureAtlas[combinedAtlases.size];
 
         for(int i = 0; i < combinedAtlases.size; ++i) {
-            atlasArray[i] = combinedAtlases.getValueAt(i);
+            atlasArray[i] = (TextureAtlas)combinedAtlases.getValueAt(i);
         }
 
         return atlasArray;
@@ -246,7 +233,7 @@ public class ModManager {
             try {
                 FileHandle modFile = Game.getInternal(path + "/data/tiles.dat");
                 if (modFile.exists() && !this.pathIsExcluded(path + "/data/tiles.dat")) {
-                    TileManager tileManager = Game.fromJson(TileManager.class, modFile);
+                    TileManager tileManager = (TileManager)Game.fromJson(TileManager.class, modFile);
                     if (tileManager.tileData != null) {
                         combinedTileManager.tileData.putAll(tileManager.tileData);
                     }
@@ -263,27 +250,6 @@ public class ModManager {
         return combinedTileManager;
     }
 
-    public ShaderManager loadShaderManager() {
-        ShaderManager combinedShaders = new ShaderManager();
-        ShaderManager.loaded = true;
-        for (String path : this.modsFound) {
-            try {
-                FileHandle modFile = Game.getInternal(path + "/data/shaders.dat");
-                if ((modFile.exists()) && (!pathIsExcluded(path + "/data/shaders.dat"))) {
-                    ShaderData[] shaders = Game.fromJson(ShaderData[].class, modFile);
-                    for (ShaderData sd : shaders) {
-                        combinedShaders.shaders.put(sd.name, sd);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Gdx.app.error("Delver", "Error loading mod file " + path + "/data/shaders.dat: " + ex.getMessage());
-            }
-        }
-        return combinedShaders;
-    }
-
     public LerpedAnimationManager loadAnimationManager() {
         LerpedAnimationManager animationManager = new LerpedAnimationManager();
 
@@ -291,7 +257,7 @@ public class ModManager {
             try {
                 FileHandle modFile = Game.getInternal(path + "/data/animations.dat");
                 if (modFile.exists() && !this.pathIsExcluded(path + "/data/animations.dat")) {
-                    LerpedAnimationManager modManager = Game.fromJson(LerpedAnimationManager.class, modFile);
+                    LerpedAnimationManager modManager = (LerpedAnimationManager)Game.fromJson(LerpedAnimationManager.class, modFile);
                     animationManager.animations.putAll(modManager.animations);
                 }
             } catch (Exception ex) {
@@ -304,7 +270,7 @@ public class ModManager {
     }
 
     public HashMap<String, LocalizedString> loadLocalizedStrings() {
-        HashMap<String, LocalizedString> combinedLocalizedStrings = new HashMap<>();
+        HashMap<String, LocalizedString> combinedLocalizedStrings = new HashMap();
 
         for (String path : modsFound) {
             try {
@@ -330,70 +296,60 @@ public class ModManager {
             FileHandle modFile = Game.getInternal(path + "/" + filename);
             if (modFile.exists() && !this.pathIsExcluded(path + "/" + filename)) {
                 GenTheme theme = (GenTheme)Game.fromJson(GenTheme.class, modFile);
-                if (theme.genInfos != null)
-                {
+                if (theme.genInfos != null) {
                     if (combinedTheme.genInfos == null) {
                         combinedTheme.genInfos = new Array();
                     }
+
                     combinedTheme.genInfos.addAll(theme.genInfos);
                 }
-                if (theme.doors != null)
-                {
+
+                if (theme.doors != null) {
                     if (combinedTheme.doors == null) {
                         combinedTheme.doors = new Array();
                     }
+
                     combinedTheme.doors.addAll(theme.doors);
                 }
-                if (theme.spawnLights != null)
-                {
+
+                if (theme.spawnLights != null) {
                     if (combinedTheme.spawnLights == null) {
                         combinedTheme.spawnLights = new Array();
                     }
+
                     combinedTheme.spawnLights.addAll(theme.spawnLights);
                 }
+
                 if (theme.exitUp != null) {
                     combinedTheme.exitUp = theme.exitUp;
                 }
+
                 if (theme.exitDown != null) {
                     combinedTheme.exitDown = theme.exitDown;
                 }
-                if (theme.decorations != null)
-                {
+
+                if (theme.decorations != null) {
                     if (combinedTheme.decorations == null) {
                         combinedTheme.decorations = new Array();
                     }
+
                     combinedTheme.decorations.addAll(theme.decorations);
                 }
-                if (theme.surprises != null)
-                {
-                    if (combinedTheme.surprises == null) {
-                        combinedTheme.surprises = new Array();
-                    }
-                    combinedTheme.surprises.addAll(theme.surprises);
-                }
+
                 if (theme.defaultTextureAtlas != null) {
                     combinedTheme.defaultTextureAtlas = theme.defaultTextureAtlas;
                 }
+
                 if (theme.painter != null) {
                     combinedTheme.painter = theme.painter;
                 }
+
                 if (theme.texturePainters != null) {
                     combinedTheme.texturePainters = theme.texturePainters;
                 }
-                if (theme.chunkTiles != null) {
-                    combinedTheme.chunkTiles = theme.chunkTiles;
-                }
-                if (theme.mapChunks != null) {
-                    combinedTheme.mapChunks = theme.mapChunks;
-                }
-                if (theme.mapComplexity != null) {
-                    combinedTheme.mapComplexity = theme.mapComplexity;
-                }
-                if (theme.lakes != null) {
-                    combinedTheme.lakes = theme.lakes;
-                }
             }
         }
+
         return combinedTheme;
     }
 

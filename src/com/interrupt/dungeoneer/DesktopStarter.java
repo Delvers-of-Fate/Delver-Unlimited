@@ -6,7 +6,6 @@ import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.interrupt.api.steam.SteamApi;
-import com.interrupt.dungeoneer.game.Options;
 import com.interrupt.dungeoneer.steamapi.SteamDesktopApi;
 import net.cotd.delverunlimited.Config;
 
@@ -29,6 +28,7 @@ public class DesktopStarter
 
     public static void main(String[] args)
     {
+
         checkArgs(args);
 
         if(Config.isRelease) {
@@ -53,27 +53,25 @@ public class DesktopStarter
             }
         }
 
-
-        Options.loadOptions();
         Graphics.DisplayMode defaultMode = LwjglApplicationConfiguration.getDesktopDisplayMode();
 
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         config.title = "Delver";
-        config.fullscreen = Options.instance.fullScreen;
+        config.fullscreen = false;
 
-        if (Config.width != 0) {
+        if(Config.width != 0) {
             config.width = Config.width;
         } else {
             config.width = defaultMode.width;
         }
 
-        if (Config.height != 0) {
+        if(Config.height != 0) {
             config.height = Config.height;
         } else {
             config.height = defaultMode.height;
         }
 
-        if (Config.borderless) {
+        if(Config.borderless) {
             // enforce fullscreen res
             config.width = defaultMode.width;
             config.height = defaultMode.height;
@@ -83,15 +81,16 @@ public class DesktopStarter
 
             // because there's no real borderless mode in lwjgl
             System.setProperty("org.lwjgl.opengl.Window.undecorated", "true");
+
         }
 
         // set title for macOS
         System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Delver");
 
-        config.vSyncEnabled = Options.instance.vsyncEnabled;
-        config.samples = Options.instance.antiAliasingSamples;
+        config.vSyncEnabled = Config.useVsync;
+        // config.useGL30 = true; // new stuff?
+        config.samples = Config.msaaSamples; // enable MSAA
         config.stencil = 8;
-        config.foregroundFPS = Options.instance.fpsLimit;
 
         config.addIcon("icon-16.png", Files.FileType.Internal);  // 16x16 icon (Windows)
         config.addIcon("icon-32.png", Files.FileType.Internal);  // 32x32 icon (Windows + Linux)
@@ -116,6 +115,9 @@ public class DesktopStarter
             if (arg.toLowerCase().equals("--debug")) {
                 com.interrupt.dungeoneer.game.Game.isDebugMode = true;
 
+            } else if (arg.toLowerCase().equals("--vsync")) {
+                Config.useVsync = true;
+
             } else if (arg.toLowerCase().contains("--maxfps=")) {
                 Config.maxFPS = Integer.parseInt(arg.substring(9));
 
@@ -127,6 +129,9 @@ public class DesktopStarter
 
             } else if (arg.toLowerCase().contains("--borderless")) {
                 Config.borderless = true;
+
+            } else if (arg.toLowerCase().contains("--msaa=")) {
+                Config.msaaSamples = Integer.parseInt(arg.substring(7));
 
             } else if (arg.toLowerCase().equals("--no-steam")) {
                 Config.skipSteam = true;
@@ -145,10 +150,12 @@ public class DesktopStarter
                 System.out.println("Usage: java -jar " + jarFileName + " [ARGS]");
                 System.out.println();
                 System.out.println("--debug                Enables debugging mode, also known as developer mode.");
+                System.out.println("--vsync                Enables vsync.");
                 System.out.println("--maxfps=<int>         Sets max fps.");
                 System.out.println("--width=<int>          Set custom width.");
                 System.out.println("--height<int>          Set custom height.");
                 System.out.println("--borderless           Enable borderless mode.");
+                System.out.println("--msaa=<int>           Number of msaa samples.");
                 System.out.println("--no-steam             Disable Steamworks addon.");
                 System.out.println("--drawdebugboxes       Draws hitbox for all entities.");
                 System.out.println("--skipintro            Skips the intro videos.");

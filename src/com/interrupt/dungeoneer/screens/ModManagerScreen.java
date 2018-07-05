@@ -116,7 +116,7 @@ public class ModManagerScreen extends BaseScreen {
         backButton.setColor(Colors.EXPLOSION);
         backButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-              //  GameApplication.SetScreen(new OptionsScreen());
+                GameApplication.SetScreen(new OptionsScreen());
             }
         });
 
@@ -211,7 +211,7 @@ public class ModManagerScreen extends BaseScreen {
     public void tick(float delta) {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-       //     GameApplication.SetScreen(new OptionsScreen());
+            GameApplication.SetScreen(new OptionsScreen());
         }
 
         super.tick(delta);
