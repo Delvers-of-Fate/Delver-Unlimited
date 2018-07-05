@@ -1,7 +1,6 @@
 package com.interrupt.dungeoneer.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -41,12 +40,9 @@ public class MainMenuScreen extends BaseScreen {
     private TextButton playButton;
     private TextButton deleteButton;
     private TextButton optionsButton;
-    private TextButton exitButton;
     public static Progression[] progress = new Progression[3];
     public static Player[] saveGames = new Player[3];
     public static Integer selectedSave;
-    private boolean isSelected = false;
-    private Table selectedSaveTable = null;
     private boolean ignoreEscapeKey = false;
     Array<Table> saveSlotUi = new Array();
     Player errorPlayer = new Player();
@@ -83,11 +79,6 @@ public class MainMenuScreen extends BaseScreen {
         this.buttonTable = new Table();
         this.ui.addActor(this.fullTable);
         Gdx.input.setInputProcessor(this.ui);
-
-        // reset stuff
-        isSelected = false;
-        selectedSaveTable = null;
-        selectedSave = null;
     }
 
     public void makeContent() {
@@ -102,36 +93,27 @@ public class MainMenuScreen extends BaseScreen {
             }
         });
         this.deleteButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("screens.MainMenuScreen.eraseButton")), this.skin);
-        this.deleteButton.setColor(Colors.PARALYZE);
+        this.deleteButton.setColor(Colors.ERASE_BUTTON);
         this.deleteButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 MainMenuScreen.this.deleteButtonEvent();
             }
         });
         this.optionsButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("screens.MainMenuScreen.optionsButton")), this.skin);
-        this.optionsButton.setColor(Color.SKY);
         this.optionsButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 GameApplication.SetScreen(new OverlayWrapperScreen(new OptionsOverlay(false, true)));
             }
         });
-        this.exitButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("screens.MainMenuScreen.exitButton")), this.skin);
-        this.exitButton.setColor(Colors.ERASE_BUTTON);
-        this.exitButton.addListener(new ClickListener()
-        {
-            public void clicked(InputEvent event, float x, float y)
-            {
-                GameApplication.SetScreen(new ConfirmExitScreen());
-            }
-        });
-        this.fullTable.row();
-        this.fullTable.add(StringManager.get("screens.MainMenuScreen.selectSaveSlot")).padTop(3F).padBottom(3F);
+        this.fullTable.clearChildren();
+        this.fullTable.add(StringManager.get("screens.MainMenuScreen.selectSaveSlot")).align(8).padTop(22.0F).padBottom(6.0F);
+        this.fullTable.add(this.deleteButton).align(16).padTop(10.0F);
         this.fullTable.row();
         this.buttonTable.clearChildren();
+        NinePatchDrawable fileSelectBg = new NinePatchDrawable(new NinePatch(this.skin.getRegion("save-select"), 6, 6, 6, 6));
 
-        NinePatchDrawable fileSelectBg = new NinePatchDrawable(new NinePatch(this.skin.getRegion("save-select"), 1, 1, 1, 1));
         for (int i : saveFiles) {
-            Player save = saveGames[i];
+            Player save = this.saveGames[i];
             String saveName = StringManager.get("screens.MainMenuScreen.newGameSaveSlot");
             if (this.saveGames[i] != null && this.saveGames[i] == this.errorPlayer) {
                 saveName = StringManager.get("screens.MainMenuScreen.errorSaveSlot");
@@ -195,7 +177,7 @@ public class MainMenuScreen extends BaseScreen {
             t.setTouchable(Touchable.enabled);
             t.addListener(new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
-                    MainMenuScreen.this.selectSaveButtonEvent(i, t, getTapCount());
+                    MainMenuScreen.this.selectSaveButtonEvent(i, t);
                 }
             });
             t.setColor(Color.GRAY);
@@ -226,35 +208,10 @@ public class MainMenuScreen extends BaseScreen {
             });
             this.gamepadEntries.add(g);
         }
-        this.buttonTable.add().width(2.0F);
         this.buttonTable.add(this.playButton).height(20.0F);
-        this.buttonTable.add(this.deleteButton).height(20.0F);
-        this.buttonTable.add().width(36.0F);
-        this.buttonTable.add(this.exitButton).height(20.0F);
+        this.buttonTable.add().width(147.0F);
         this.buttonTable.add(this.optionsButton).height(20.0F);
         this.buttonTable.pack();
-
-        // play button
-        BaseScreen.GamepadEntry playEntry = new BaseScreen.GamepadEntry(this.playButton, new BaseScreen.GamepadEntryListener(){
-            @Override
-            public void onPress() {
-                for (EventListener listener : MainMenuScreen.this.playButton.getListeners()) {
-                    if (!(listener instanceof ClickListener)) continue;
-                    ((ClickListener)listener).clicked(new InputEvent(), MainMenuScreen.this.playButton.getX(), MainMenuScreen.this.playButton.getY());
-                }
-            }
-        }, new BaseScreen.GamepadEntryListener(){
-
-            @Override
-            public void onPress() {
-                for (EventListener listener : MainMenuScreen.this.playButton.getListeners()) {
-                    if (!(listener instanceof ClickListener)) continue;
-                    ((ClickListener)listener).clicked(new InputEvent(), MainMenuScreen.this.playButton.getX(), MainMenuScreen.this.playButton.getY());
-                }
-            }
-        });
-
-        // options button
         BaseScreen.GamepadEntry optionsEntry = new BaseScreen.GamepadEntry(this.optionsButton, new BaseScreen.GamepadEntryListener(){
             @Override
             public void onPress() {
@@ -273,51 +230,7 @@ public class MainMenuScreen extends BaseScreen {
                 }
             }
         });
-
-        // erase button
-        BaseScreen.GamepadEntry eraseEntry = new BaseScreen.GamepadEntry(this.deleteButton, new BaseScreen.GamepadEntryListener(){
-            @Override
-            public void onPress() {
-                for (EventListener listener : MainMenuScreen.this.deleteButton.getListeners()) {
-                    if (!(listener instanceof ClickListener)) continue;
-                    ((ClickListener)listener).clicked(new InputEvent(), MainMenuScreen.this.deleteButton.getX(), MainMenuScreen.this.deleteButton.getY());
-                }
-            }
-        }, new BaseScreen.GamepadEntryListener(){
-
-            @Override
-            public void onPress() {
-                for (EventListener listener : MainMenuScreen.this.deleteButton.getListeners()) {
-                    if (!(listener instanceof ClickListener)) continue;
-                    ((ClickListener)listener).clicked(new InputEvent(), MainMenuScreen.this.deleteButton.getX(), MainMenuScreen.this.deleteButton.getY());
-                }
-            }
-        });
-
-        // exit button
-        BaseScreen.GamepadEntry exitEntry = new BaseScreen.GamepadEntry(this.exitButton, new BaseScreen.GamepadEntryListener(){
-            @Override
-            public void onPress() {
-                for (EventListener listener : MainMenuScreen.this.exitButton.getListeners()) {
-                    if (!(listener instanceof ClickListener)) continue;
-                    ((ClickListener)listener).clicked(new InputEvent(), MainMenuScreen.this.exitButton.getX(), MainMenuScreen.this.exitButton.getY());
-                }
-            }
-        }, new BaseScreen.GamepadEntryListener(){
-
-            @Override
-            public void onPress() {
-                for (EventListener listener : MainMenuScreen.this.exitButton.getListeners()) {
-                    if (!(listener instanceof ClickListener)) continue;
-                    ((ClickListener)listener).clicked(new InputEvent(), MainMenuScreen.this.exitButton.getX(), MainMenuScreen.this.exitButton.getY());
-                }
-            }
-        });
-        this.gamepadEntries.add(playEntry);
-        this.gamepadEntries.add(eraseEntry);
-        this.gamepadEntries.add(exitEntry);
         this.gamepadEntries.add(optionsEntry);
-
         this.fullTable.row();
         this.fullTable.add(this.buttonTable).colspan(2).height(30.0F).fill(true, false).align(1);
         this.fullTable.row();
@@ -370,26 +283,12 @@ public class MainMenuScreen extends BaseScreen {
 
     public void tick(float delta) {
         super.tick(delta);
-        // https://libgdx.badlogicgames.com/nightlies/docs/api/constant-values.html
-        if (Gdx.input.isKeyPressed(Input.Keys.O)) {
-            GameApplication.SetScreen(new OverlayWrapperScreen(new OptionsOverlay(false, true)));
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            if (selectedSave != null) {
-                GameApplication.SetScreen(new LoadingScreen(saveGames[selectedSave] == null ? "CREATING DUNGEON" : "LOADING", selectedSave));
+        if (Gdx.input.isKeyPressed(131)) {
+            if (!this.ignoreEscapeKey) {
+                Gdx.app.exit();
             }
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            // fix for instant close
-            if (ignoreEscapeKey) {
-                GameApplication.SetScreen(new ConfirmExitScreen());
-            } else {
-                ignoreEscapeKey = true;
-            }
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.F5)) {
-            GameApplication.SetScreen(new MainMenuScreen());
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.FORWARD_DEL)) {
-            if (selectedSave != null && saveGames[selectedSave] != null && !isSelected) {
-                GameApplication.SetScreen(new ConfirmScreen(selectedSave));
-            }
+        } else {
+            this.ignoreEscapeKey = false;
         }
 
         this.ui.act(delta);
@@ -401,24 +300,13 @@ public class MainMenuScreen extends BaseScreen {
 
             Audio.setMusicVolume(Math.min(1.0F, 1.0F * this.fadeFactor));
         }
+
     }
 
-    public void selectSaveButtonEvent(int saveLoc, Table selected, int count) {
+    public void selectSaveButtonEvent(int saveLoc, Table selected) {
         this.gamepadSelectionIndex = saveLoc;
-        this.isSelected = false;
 
-        if (this.selectedSaveTable == selected) {
-            selected = null; // unselect
-            isSelected = true;
-        }
-
-        this.selectedSaveTable = selected;
-
-        if (count > 1 && selectedSave != null) {
-            GameApplication.SetScreen(new LoadingScreen(saveGames[selectedSave] == null ? StringManager.get("screens.MainMenuScreen.creatingDungeon") : StringManager.get("screens.MainMenuScreen.loadingSaveSlot"), selectedSave));
-        }
-
-        for (int i = 0; i < this.saveSlotUi.size; ++i) {
+        for(int i = 0; i < this.saveSlotUi.size; ++i) {
             ((Table)this.saveSlotUi.get(i)).setColor(Color.GRAY);
         }
 
@@ -426,26 +314,14 @@ public class MainMenuScreen extends BaseScreen {
             selected.setColor(Color.WHITE);
         }
 
-        if (saveGames[saveLoc] != this.errorPlayer && !isSelected) {
+        if (this.saveGames[saveLoc] != this.errorPlayer) {
             this.playButton.setVisible(true);
         } else {
             this.playButton.setVisible(false);
         }
 
-        if (selected != null) {
-            selectedSave = saveLoc;
-        } else {
-            selectedSave = null;
-        }
-
-        if (selectedSave != null && saveGames[selectedSave] != null && !isSelected) {
-            this.deleteButton.setVisible(true);
-        } else if (selectedSave != null && progress[selectedSave] != null && !isSelected) {
-            this.deleteButton.setVisible(true);
-        } else {
-            this.deleteButton.setVisible(false);
-        }
-
+        this.selectedSave = saveLoc;
+        this.deleteButton.setVisible(this.saveGames[this.selectedSave] != null || this.progress[this.selectedSave] != null);
         Audio.playSound("/ui/ui_button_click.mp3", 0.3F);
     }
 
