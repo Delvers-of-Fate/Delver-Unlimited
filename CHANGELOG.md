@@ -6,9 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
+- Ported to Delver v1.04
 - Checks for the history entries
 - `Open working directory` in DelvEdit
-- Improved support with mods that don't support the mod manager
 
 ## [1.6.0] - 2017-11-01
 ### Added

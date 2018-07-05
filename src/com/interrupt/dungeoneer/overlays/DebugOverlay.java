@@ -6,9 +6,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
@@ -18,22 +18,24 @@ import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.entities.Item;
 import com.interrupt.dungeoneer.entities.Monster;
 import com.interrupt.dungeoneer.entities.Player;
-import com.interrupt.dungeoneer.entities.items.*;
+import com.interrupt.dungeoneer.entities.items.Armor;
+import com.interrupt.dungeoneer.entities.items.Gold;
+import com.interrupt.dungeoneer.entities.items.QuestItem;
+import com.interrupt.dungeoneer.entities.items.Sword;
 import com.interrupt.dungeoneer.game.Game;
+import com.interrupt.dungeoneer.gfx.GlRenderer;
+import com.interrupt.dungeoneer.gfx.Tesselator;
+import com.interrupt.dungeoneer.ui.UiSkin;
 import com.interrupt.managers.ItemManager;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
-
-import static com.interrupt.managers.ItemManager.Copy;
 
 public class DebugOverlay extends WindowOverlay {
     final Player player;
     protected TextButton doneBtn;
     protected final Color selectedValue = new Color(0.6F, 1.0F, 0.6F, 1.0F);
     protected final Color unselectedValue = new Color(0.6F, 0.6F, 0.6F, 1.0F);
-
     private boolean escapePressed = false;
 
     public DebugOverlay(Player player) {
@@ -112,9 +114,9 @@ public class DebugOverlay extends WindowOverlay {
         final Label name = new Label(text.toUpperCase(), (LabelStyle)this.skin.get("input", LabelStyle.class));
         name.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                OverlayManager.instance.remove(DebugOverlay.this);
+                //OverlayManager.instance.remove(DebugOverlay.this);
                 ++Game.instance.player.level;
-                OverlayManager.instance.push(new LevelUpOverlay(Game.instance.player));
+                OverlayManager.instance.push(new LevelUpOverlayMark2(Game.instance.player));
             }
 
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
@@ -134,7 +136,7 @@ public class DebugOverlay extends WindowOverlay {
         final Label name = new Label(text.toUpperCase(), (LabelStyle)this.skin.get("input", LabelStyle.class));
         name.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                OverlayManager.instance.remove(DebugOverlay.this);
+                //OverlayManager.instance.remove(DebugOverlay.this);
                 Game.instance.level.down.changeLevel(Game.instance.level);
             }
 
@@ -155,7 +157,7 @@ public class DebugOverlay extends WindowOverlay {
         final Label name = new Label(text.toUpperCase(), (LabelStyle)this.skin.get("input", LabelStyle.class));
         name.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                OverlayManager.instance.remove(DebugOverlay.this);
+                //OverlayManager.instance.remove(DebugOverlay.this);
                 Game.instance.player.floating = !Game.instance.player.floating;
             }
 
@@ -176,9 +178,51 @@ public class DebugOverlay extends WindowOverlay {
         final Label name = new Label(text.toUpperCase(), (LabelStyle)this.skin.get("input", LabelStyle.class));
         name.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                OverlayManager.instance.remove(DebugOverlay.this);
+                //OverlayManager.instance.remove(DebugOverlay.this);
                 Game.instance.player.isSolid = !Game.instance.player.isSolid;
                 Game.instance.player.floating = !Game.instance.player.isSolid;
+            }
+
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                name.setStyle((LabelStyle)DebugOverlay.this.skin.get("inputover", LabelStyle.class));
+            }
+
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                name.setStyle((LabelStyle)DebugOverlay.this.skin.get("input", LabelStyle.class));
+            }
+        });
+        this.buttonOrder.add(name);
+        table.add(name).align(8);
+        table.row();
+    }
+
+    protected void addGodModeOption(Table table, String text) {
+        final Label name = new Label(text.toUpperCase(), (LabelStyle)this.skin.get("input", LabelStyle.class));
+        name.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                //OverlayManager.instance.remove(DebugOverlay.this);
+                Game.instance.player.godMode = !Game.instance.player.godMode;
+            }
+
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                name.setStyle((LabelStyle)DebugOverlay.this.skin.get("inputover", LabelStyle.class));
+            }
+
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                name.setStyle((LabelStyle)DebugOverlay.this.skin.get("input", LabelStyle.class));
+            }
+        });
+        this.buttonOrder.add(name);
+        table.add(name).align(8);
+        table.row();
+    }
+
+    protected void addNoTargetOption(Table table, String text) {
+        final Label name = new Label(text.toUpperCase(), (LabelStyle)this.skin.get("input", LabelStyle.class));
+        name.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                //OverlayManager.instance.remove(DebugOverlay.this);
+                Game.instance.player.invisible = !Game.instance.player.invisible;
             }
 
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
@@ -198,7 +242,7 @@ public class DebugOverlay extends WindowOverlay {
         final Label name = new Label("DIE", (LabelStyle)this.skin.get("input", LabelStyle.class));
         name.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                OverlayManager.instance.remove(DebugOverlay.this);
+                //OverlayManager.instance.remove(DebugOverlay.this);
                 Game.instance.player.die();
             }
 
@@ -219,29 +263,8 @@ public class DebugOverlay extends WindowOverlay {
         final Label name = new Label("REFRESH", (LabelStyle)this.skin.get("input", LabelStyle.class));
         name.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                OverlayManager.instance.remove(DebugOverlay.this);
+                //OverlayManager.instance.remove(DebugOverlay.this);
                 DebugOverlay.this.refreshData();
-            }
-
-            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-                name.setStyle((LabelStyle)DebugOverlay.this.skin.get("inputover", LabelStyle.class));
-            }
-
-            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-                name.setStyle((LabelStyle)DebugOverlay.this.skin.get("input", LabelStyle.class));
-            }
-        });
-        this.buttonOrder.add(name);
-        table.add(name).align(8);
-        table.row();
-    }
-
-    protected void addHealItem(Table table) {
-        final Label name = new Label("HEAL", (LabelStyle)this.skin.get("input", LabelStyle.class));
-        name.addListener(new ClickListener() {
-            public void clicked(InputEvent event, float x, float y) {
-                player.hp = player.getMaxHp();
-                player.clearStatusEffects();
             }
 
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
@@ -261,7 +284,7 @@ public class DebugOverlay extends WindowOverlay {
         final Label name = new Label(text.toUpperCase(), (LabelStyle)this.skin.get("input", LabelStyle.class));
         name.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                DebugOverlay.this.makeLayout(DebugOverlay.this.makeContentFromItems(category != ""?category + "/" + text:text, items));
+                DebugOverlay.this.makeLayout(DebugOverlay.this.makeContentFromItems(category != "" ? category + "/" + text : text, items));
             }
 
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
@@ -281,14 +304,13 @@ public class DebugOverlay extends WindowOverlay {
         final Label name = new Label(text.toUpperCase(), (LabelStyle)this.skin.get("input", LabelStyle.class));
         name.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
-                Item i = Copy(item.getClass(), item);
-                if(i != null) {
-                    ItemManager.setItemLevel(Integer.valueOf(Game.instance.player.level), i);
+                Item i = ItemManager.Copy(item.getClass(), item);
+                if (i != null) {
+                    ItemManager.setItemLevel(Game.instance.player.level, i);
                 }
 
                 Game.instance.player.dropItem(i, Game.instance.level, 0.2F);
-               // OverlayManager.instance.remove(DebugOverlay.this);
-
+                //OverlayManager.instance.remove(DebugOverlay.this);
             }
 
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
@@ -321,7 +343,7 @@ public class DebugOverlay extends WindowOverlay {
                 copy.za = 0.01F;
                 copy.Init(Game.instance.level, DebugOverlay.this.player.level);
                 Game.instance.level.entities.add(copy);
-               // OverlayManager.instance.remove(DebugOverlay.this);
+                //OverlayManager.instance.remove(DebugOverlay.this);
             }
 
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
@@ -337,7 +359,7 @@ public class DebugOverlay extends WindowOverlay {
         table.row();
     }
 
-    protected Table makeContent() {
+    public Table makeContent() {
         this.buttonOrder.clear();
         this.doneBtn = new TextButton("DONE", (TextButtonStyle)this.skin.get(TextButtonStyle.class));
         this.doneBtn.setWidth(200.0F);
@@ -348,7 +370,7 @@ public class DebugOverlay extends WindowOverlay {
             }
         });
         Table contentTable = new Table();
-        Label title = new Label("DEBUG MENU", (LabelStyle)this.skin.get(LabelStyle.class));
+        Label title = new Label("DEBUG!", (LabelStyle)this.skin.get(LabelStyle.class));
         contentTable.add(title).colspan(2).padBottom(4.0F);
         contentTable.row();
         Array<Item> wands = new Array();
@@ -358,16 +380,11 @@ public class DebugOverlay extends WindowOverlay {
         Array<Item> scrolls = new Array();
         scrolls.addAll(Game.instance.itemManager.scrolls);
         Array<Item> potions = new Array();
-        potions.addAll(Game.instance.itemManager.potions);
+        potions.addAll(Game.instance.player.shuffledPotions);
         Array<Item> uniques = new Array();
-        if(Game.instance.itemManager.unique != null) {
+        if (Game.instance.itemManager.unique != null) {
             uniques.addAll(Game.instance.itemManager.unique);
         }
-        Array<Item> currency = new Array();
-
-        currency.add(new Gold());
-        currency.add(new Gold(5));
-        currency.add(new Gold(10));
 
         HashMap<String, Array<Item>> armors = new HashMap();
         Iterator var10 = Game.instance.itemManager.armor.entrySet().iterator();
@@ -402,30 +419,23 @@ public class DebugOverlay extends WindowOverlay {
 
         junk = new Array();
         junk.addAll(Game.instance.itemManager.junk);
-        this.addItems(contentTable, "MELEE", melee);
-        this.addItems(contentTable, "ARMOR", armors);
-        this.addItems(contentTable, "RANGED", ranged);
-        this.addItems(contentTable, "", "SCROLLS", scrolls);
-        this.addItems(contentTable, "", "WANDS", wands);
         this.addItem(contentTable, "MONSTERS", Game.instance.monsterManager.monsters);
-
-        this.addItems(contentTable, "", "", new Array()); // empty
-
+        this.addItems(contentTable, "", "WANDS", wands);
+        this.addItems(contentTable, "ARMOR", armors);
+        this.addItems(contentTable, "MELEE", melee);
+        this.addItems(contentTable, "RANGED", ranged);
         this.addItems(contentTable, "", "FOOD", food);
+        this.addItems(contentTable, "", "SCROLLS", scrolls);
         this.addItems(contentTable, "", "POTIONS", potions);
         this.addItems(contentTable, "", "UNIQUES", uniques);
-        this.addItems(contentTable, "", "CURRENCY", currency);
         this.addItems(contentTable, "", "JUNK", junk);
         this.addItem(contentTable, "ORB", (Item)(new QuestItem()));
-
-        this.addItems(contentTable, "", "", new Array()); // empty
-
+        this.addItem(contentTable, "Gold", (Item)(new Gold(200)));
+        this.addLevelUpItem(contentTable, "LEVEL UP!");
         this.addFlightItem(contentTable, "TOGGLE FLIGHT");
         this.addNoClipItem(contentTable, "TOGGLE NOCLIP");
-
-        this.addItems(contentTable, "", "", new Array()); // empty
-        this.addLevelUpItem(contentTable, "LEVEL UP!");
-        this.addHealItem(contentTable);
+        this.addGodModeOption(contentTable, "TOGGLE GODMODE");
+        this.addNoTargetOption(contentTable, "TOGGLE NOTARGET");
         this.addRefreshItem(contentTable);
         this.addSuicideItem(contentTable);
         contentTable.add(this.doneBtn).padTop(4.0F).align(1).colspan(2);
@@ -504,9 +514,9 @@ public class DebugOverlay extends WindowOverlay {
 
         for(int var7 = 0; var7 < var6; ++var7) {
             Entity entry = var5[var7];
-            if(entry instanceof Item) {
+            if (entry instanceof Item) {
                 this.addItem(contentTable, ((Item)entry).GetName(), (Item)entry);
-            } else if(entry instanceof Monster) {
+            } else if (entry instanceof Monster) {
                 this.addItem(contentTable, ((Monster)entry).name, (Monster)entry);
             }
         }
@@ -524,7 +534,7 @@ public class DebugOverlay extends WindowOverlay {
         this.doneBtn.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 DebugOverlay.this.makeLayout(DebugOverlay.this.makeContent());
-           }
+            }
         });
         Table contentTable = new Table();
         Label title = new Label(titleText, (LabelStyle)this.skin.get(LabelStyle.class));
@@ -569,43 +579,54 @@ public class DebugOverlay extends WindowOverlay {
     }
 
     public void refreshData() {
-        Art.KillCache();
-        Game.instance.loadManagers();
-        GameManager.renderer.initTextures();
-        Game var10000 = Game.instance;
-        Iterator var1 = Game.GetLevel().entities.iterator();
+        try {
+            Art.KillCache();
+            Game.instance.loadManagers();
+            GameManager.renderer.initTextures();
+            GameManager.renderer.initShaders();
+            GlRenderer.staticMeshPool.resetAndDisposeAllMeshes();
+            Tesselator.tesselatorMeshPool.resetAndDisposeAllMeshes();
+            Iterator var1 = Game.GetLevel().entities.iterator();
 
-        Entity e;
-        while(var1.hasNext()) {
-            e = (Entity)var1.next();
-            e.resetDrawable();
+            Entity e;
+            while(var1.hasNext()) {
+                e = (Entity)var1.next();
+                if (e.drawable != null) {
+                    e.drawable.refresh();
+                    e.drawable.update(e);
+                }
+            }
+
+            var1 = Game.GetLevel().static_entities.iterator();
+
+            while(var1.hasNext()) {
+                e = (Entity)var1.next();
+                if (e.drawable != null) {
+                    e.drawable.refresh();
+                    e.drawable.update(e);
+                }
+            }
+
+            var1 = Game.GetLevel().non_collidable_entities.iterator();
+
+            while(var1.hasNext()) {
+                e = (Entity)var1.next();
+                if (e.drawable != null) {
+                    e.drawable.refresh();
+                    e.drawable.update(e);
+                }
+            }
+
+            GameManager.renderer.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            Game.GetLevel().isDirty = true;
+            UiSkin.loadSkin();
+        } catch (Exception var3) {
+            Gdx.app.log("Delver", "Could not refresh: " + var3.getMessage());
         }
 
-        var10000 = Game.instance;
-        var1 = Game.GetLevel().static_entities.iterator();
-
-        while(var1.hasNext()) {
-            e = (Entity)var1.next();
-            e.resetDrawable();
-        }
-
-        var10000 = Game.instance;
-        var1 = Game.GetLevel().non_collidable_entities.iterator();
-
-        while(var1.hasNext()) {
-            e = (Entity)var1.next();
-            e.resetDrawable();
-        }
-
-        var10000 = Game.instance;
-        Game.GetLevel().isDirty = true;
     }
 
     public void tick(float delta) {
-        if (this.running) {
-            this.timer += delta;
-        }
-
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             OverlayManager.instance.remove(DebugOverlay.this);
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
