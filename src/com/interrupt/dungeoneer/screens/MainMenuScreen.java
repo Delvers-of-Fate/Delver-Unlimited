@@ -1,6 +1,7 @@
 package com.interrupt.dungeoneer.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -48,11 +49,10 @@ public class MainMenuScreen extends BaseScreen {
     private TextButton playButton;
     private TextButton deleteButton;
     private TextButton optionsButton;
+    private TextButton quitButton;
     public static Progression[] progress = new Progression[3];
     public static Player[] saveGames = new Player[3];
     public static Integer selectedSave;
-    private boolean ignoreEscapeKey = false;
-    private boolean refreshOnEscape = false;
     Array<Table> saveSlotUi = new Array();
     Player errorPlayer = new Player();
     Array<Level> dungeonInfo;
@@ -60,6 +60,7 @@ public class MainMenuScreen extends BaseScreen {
     boolean fadingOut;
     float fadeFactor;
     private int[] saveFiles = {0, 1, 2};
+    private boolean escapePressed = false;
 
     public MainMenuScreen() {
         this.fadeColor = new Color(Color.BLACK);
@@ -93,7 +94,7 @@ public class MainMenuScreen extends BaseScreen {
     public void makeContent() {
         this.gamepadEntries.clear();
         this.gamepadSelectionIndex = null;
-        this.refreshOnEscape = false;
+
         String paddedButtonText = " {0} ";
         this.playButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("screens.MainMenuScreen.playButton")), this.skin);
         this.playButton.setColor(Colors.PLAY_BUTTON);
@@ -103,19 +104,31 @@ public class MainMenuScreen extends BaseScreen {
             }
         });
         this.deleteButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("screens.MainMenuScreen.eraseButton")), this.skin);
-        this.deleteButton.setColor(Colors.ERASE_BUTTON);
+        this.deleteButton.setColor(Colors.PARALYZE);
         this.deleteButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 MainMenuScreen.this.deleteButtonEvent(false);
             }
         });
         this.optionsButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("screens.MainMenuScreen.optionsButton")), this.skin);
+        this.optionsButton.setColor(Color.SKY);
         this.optionsButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 GameApplication.SetScreen(new OverlayWrapperScreen(new OptionsOverlay(false, true)));
             }
         });
+        this.quitButton = new TextButton(MessageFormat.format(paddedButtonText, StringManager.get("screens.MainMenuScreen.quitButton")), this.skin);
+        this.quitButton.setColor(Colors.ERASE_BUTTON);
+        this.quitButton.addListener(new ClickListener()
+        {
+            public void clicked(InputEvent event, float x, float y)
+            {
+                MainMenuScreen.this.quitButtonEvent(false);
+
+            }
+        });
         TextButton modsButton = new TextButton(MessageFormat.format(paddedButtonText, "Mods"), this.skin);
+        modsButton.setColor(Color.PURPLE);
         modsButton.addListener(new ClickListener() {
             public void clicked(InputEvent event, float x, float y) {
                 GameApplication.SetScreen(new OverlayWrapperScreen(new ModsOverlay()));
@@ -124,7 +137,6 @@ public class MainMenuScreen extends BaseScreen {
         this.fullTable.padTop(42.0F);
         this.fullTable.clearChildren();
         this.fullTable.add(StringManager.get("screens.MainMenuScreen.selectSaveSlot")).align(8).padTop(22.0F).padBottom(6.0F);
-        this.fullTable.add(this.deleteButton).align(16).padTop(10.0F);
         this.fullTable.row();
         this.buttonTable.clearChildren();
         NinePatchDrawable fileSelectBg = new NinePatchDrawable(new NinePatch(this.skin.getRegion("save-select"), 6, 6, 6, 6));
@@ -196,7 +208,7 @@ public class MainMenuScreen extends BaseScreen {
             t.setTouchable(Touchable.enabled);
             t.addListener(new ClickListener() {
                 public void clicked(InputEvent event, float x, float y) {
-                    MainMenuScreen.this.selectSaveButtonEvent(i, t);
+                    MainMenuScreen.this.selectSaveButtonEvent(i, t, getTapCount());
                 }
             });
             t.setColor(Color.GRAY);
@@ -236,16 +248,19 @@ public class MainMenuScreen extends BaseScreen {
              **/
         }
 
+        /**
         Table playButtonTable = new Table();
         playButtonTable.add(this.playButton).align(8).height(20.0F).expand();
         this.buttonTable.add(playButtonTable).align(8).fillX().expand();
+        this.buttonTable.add(this.deleteButton).align(8).height(20.0F).fillX().expand();
+
         if (this.hasMods()) {
             this.buttonTable.add(modsButton).align(16).height(20.0F);
         }
 
         this.buttonTable.add(this.optionsButton).align(16).height(20.0F);
         this.buttonTable.pack();
-        /**
+
         GamepadEntry optionsEntry = new GamepadEntry(this, this.optionsButton, new GamepadEntryListener() {
             public void onPress() {
                 Iterator var1 = MainMenuScreen.this.optionsButton.getListeners().iterator();
@@ -271,8 +286,23 @@ public class MainMenuScreen extends BaseScreen {
 
             }
         });
+         this.gamepadEntries.add(optionsEntry);
          **/
-        //this.gamepadEntries.add(optionsEntry);
+
+//
+        this.buttonTable.add().width(2.0F);
+        this.buttonTable.add(this.playButton).height(20.0F);
+        this.buttonTable.add(this.deleteButton).height(20.0F);
+        if (this.hasMods()) {
+            this.buttonTable.add(modsButton).height(20.0F);
+        } else {
+            this.buttonTable.add().width(36.0F);
+        }
+        this.buttonTable.add(this.quitButton).height(20.0F);
+        this.buttonTable.add(this.optionsButton).height(20.0F);
+
+        this.buttonTable.pack();
+
         this.fullTable.row();
         this.fullTable.add(this.buttonTable).colspan(2).height(30.0F).fill(true, false).align(1);
         this.fullTable.row();
@@ -280,6 +310,7 @@ public class MainMenuScreen extends BaseScreen {
         this.fullTable.pack();
         this.fullTable.padTop(42.0F);
         this.fullTable.addAction(Actions.sequence(Actions.fadeOut(1.0E-4F), Actions.fadeIn(0.2F)));
+
         this.playButton.setVisible(false);
         this.deleteButton.setVisible(false);
     }
@@ -367,7 +398,6 @@ public class MainMenuScreen extends BaseScreen {
         this.gamepadEntries.add(yesEntry);
          **/
         this.gamepadSelectionIndex = null;
-        this.refreshOnEscape = true;
     }
 
     public void show() {
@@ -378,7 +408,6 @@ public class MainMenuScreen extends BaseScreen {
 
         this.loadSavegames();
         this.makeContent();
-        this.ignoreEscapeKey = Gdx.input.isKeyPressed(131);
         this.backgroundTexture = Art.loadTexture("splash/Delver-Menu-BG.png");
         this.backgroundTexture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
         if (splashScreenInfo.music != null) {
@@ -407,19 +436,19 @@ public class MainMenuScreen extends BaseScreen {
         }
     }
 
+    // https://libgdx.badlogicgames.com/nightlies/docs/api/constant-values.html
     public void tick(float delta) {
         super.tick(delta);
-        if (Gdx.input.isKeyJustPressed(131)) {
-            if (!this.ignoreEscapeKey) {
-                if (this.refreshOnEscape) {
-                    this.refreshOnEscape = false;
-                    this.makeContent();
-                } else {
-                    Gdx.app.exit();
-                }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            if (escapePressed) {
+                MainMenuScreen.this.quitButtonEvent(false);
+            } else {
+                escapePressed = true;
             }
-        } else {
-            this.ignoreEscapeKey = false;
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            if (selectedSave != null) {
+                GameApplication.SetScreen(new LoadingScreen(saveGames[selectedSave] == null ? "CREATING DUNGEON" : "LOADING", selectedSave));
+            }
         }
 
         this.ui.act(delta);
@@ -434,8 +463,12 @@ public class MainMenuScreen extends BaseScreen {
 
     }
 
-    public void selectSaveButtonEvent(int saveLoc, Table selected) {
+    public void selectSaveButtonEvent(int saveLoc, Table selected, int tapCount) {
         this.gamepadSelectionIndex = saveLoc;
+
+        if(tapCount > 1 && selectedSave != null) {
+            GameApplication.SetScreen(new LoadingScreen(saveGames[selectedSave] == null ? StringManager.get("screens.MainMenuScreen.creatingDungeon") : StringManager.get("screens.MainMenuScreen.loadingSaveSlot"), selectedSave));
+        }
 
         for(int i = 0; i < this.saveSlotUi.size; ++i) {
             this.saveSlotUi.get(i).setColor(Color.GRAY);
@@ -513,6 +546,19 @@ public class MainMenuScreen extends BaseScreen {
             progress[selectedSave] = null;
             this.deleteSavegame(selectedSave);
             selectedSave = null;
+        }
+    }
+
+    public void quitButtonEvent(boolean force) {
+        if (!force) {
+            ClickListener quitListener = new ClickListener() {
+                public void clicked(InputEvent event, float x, float y) {
+                    MainMenuScreen.this.quitButtonEvent(true);
+                }
+            };
+            this.showModal(StringManager.get("screens.MainMenuScreen.quitWarning"), StringManager.get("screens.MainMenuScreen.quitButton"), StringManager.get("screens.MainMenuScreen.cancelButton"), quitListener, 220);
+        } else {
+            Gdx.app.exit();
         }
     }
 

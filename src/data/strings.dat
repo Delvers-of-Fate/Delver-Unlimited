@@ -2850,90 +2850,15 @@
         "class": "com.interrupt.dungeoneer.game.LocalizedString",
         "localizedName": "Your belt size increased!"
     },
-    "screens.ConfirmScreen.message":{
+    "screens.MainMenuScreen.quitButton":{
         "class":"com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName":"Are you sure you want to delete the save file?",
+        "localizedName":"Quit",
         "comment":""
     },
-    "screens.ConfirmScreen.confirmButton":{
+    "screens.MainMenuScreen.quitWarning":{
         "class":"com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName":"Are you sure you want to delete the save file?",
+        "localizedName":"Are you sure that you want to quit the game?",
         "comment":""
-    },
-    "screens.MainMenuScreen.exitButton":{
-        "class":"com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName":"Exit",
-        "comment":""
-    },
-    "screens.ConfirmScreen.declineButton":{
-        "class":"com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName":"Go back",
-        "comment":""
-    },
-    "screens.ConfirmExitScreen.message":{
-        "class":"com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName":"Are you sure that you want to close the game?",
-        "comment":""
-    },
-    "screens.OptionsScreen.modBtn":{
-        "class":"com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName":"Mods",
-        "comment":""
-    },
-    "screens.ModManagerScreen.enableButton":{
-        "class":"com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName":"Enable",
-        "comment":""
-    },
-    "screens.ModManagerScreen.disableButton":{
-        "class":"com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName":"Disable",
-        "comment":""
-    },
-    "screens.ModManagerScreen.wwwButton": {
-        "class": "com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName": "WWW",
-        "comment": ""
-    },
-    "screens.ModManagerScreen.name": {
-        "class": "com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName": "Name: ",
-        "comment": ""
-    },
-    "screens.ModManagerScreen.author": {
-        "class": "com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName": "Author: ",
-        "comment": ""
-    },
-    "screens.ModManagerScreen.description": {
-        "class": "com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName": "Description: ",
-        "comment": ""
-    },
-    "screens.ModManagerScreen.version": {
-        "class": "com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName": "Version: ",
-        "comment": ""
-    },
-    "screens.ModManagerScreen.modState": {
-        "class": "com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName": "State: ",
-        "comment": ""
-    },
-    "screens.ModManagerScreen.backButton": {
-        "class": "com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName": "Back",
-        "comment": ""
-    },
-    "screens.ModManagerScreen.modsLabel": {
-        "class": "com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName": "Mods! Restart the game for changes to take effect",
-        "comment": ""
-    },
-    "message.jump.notOnFloor":{
-        "class":"com.interrupt.dungeoneer.game.LocalizedString",
-        "localizedName":"You must be on a floor to jump!",
-        "comment":"Message shown when the player isn't on a floor and tries to jump"
     },
     "message.general.hasStatusEffects":{
         "class":"com.interrupt.dungeoneer.game.LocalizedString",
