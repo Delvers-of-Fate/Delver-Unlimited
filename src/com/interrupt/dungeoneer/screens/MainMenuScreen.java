@@ -43,8 +43,8 @@ import java.util.Iterator;
 public class MainMenuScreen extends BaseScreen {
     private Texture menuTexture;
     private TextureRegion[] menuRegions;
-    private Table fullTable = null;
-    private Table buttonTable = null;
+    private Table fullTable;
+    private Table buttonTable;
     private TextButton playButton;
     private TextButton deleteButton;
     private TextButton optionsButton;
@@ -55,7 +55,7 @@ public class MainMenuScreen extends BaseScreen {
     private boolean refreshOnEscape = false;
     Array<Table> saveSlotUi = new Array();
     Player errorPlayer = new Player();
-    Array<Level> dungeonInfo = null;
+    Array<Level> dungeonInfo;
     Color fadeColor;
     boolean fadingOut;
     float fadeFactor;
@@ -131,12 +131,12 @@ public class MainMenuScreen extends BaseScreen {
 
         for (int i : saveFiles) {
             String saveName = StringManager.get("screens.MainMenuScreen.newGameSaveSlot");
-            if (this.saveGames[i] != null && this.saveGames[i] == this.errorPlayer) {
+            if (saveGames[i] != null && saveGames[i] == this.errorPlayer) {
                 saveName = StringManager.get("screens.MainMenuScreen.errorSaveSlot");
-            } else if (this.saveGames[i] != null) {
-                saveName = this.getSaveName(this.progress[i], this.saveGames[i].levelNum, this.saveGames[i].levelName);
-            } else if (this.progress[i] != null) {
-                saveName = this.getSaveName(this.progress[i], (Integer)null, (String)null);
+            } else if (saveGames[i] != null) {
+                saveName = this.getSaveName(progress[i], saveGames[i].levelNum, saveGames[i].levelName);
+            } else if (progress[i] != null) {
+                saveName = this.getSaveName(progress[i], null, null);
             }
 
             float fontScale = 1.0F;
@@ -152,33 +152,33 @@ public class MainMenuScreen extends BaseScreen {
             locationLabel.setFontScale(fontScale);
             Table t2 = new Table(this.skin);
             t2.align(8);
-            if (this.progress[i] != null) {
-                Label playtimeLabel = new Label(this.progress[i].getPlaytime(), this.skin);
+            if (progress[i] != null) {
+                Label playtimeLabel = new Label(progress[i].getPlaytime(), this.skin);
                 playtimeLabel.setAlignment(16);
                 Table topRow = new Table();
                 topRow.add(locationLabel);
                 topRow.add(playtimeLabel).expand().align(16);
                 t2.add(topRow).width(220.0F).padTop(2.0F);
                 t2.row();
-                TextureAtlas itemAtlas = (TextureAtlas)TextureAtlas.cachedAtlases.get("item");
+                TextureAtlas itemAtlas = TextureAtlas.cachedAtlases.get("item");
                 Image goldIcon = new Image(new TextureRegionDrawable(itemAtlas.getSprite(89)));
                 goldIcon.setAlign(8);
                 Image skullIcon = new Image(new TextureRegionDrawable(itemAtlas.getSprite(56)));
                 skullIcon.setAlign(8);
                 Image orbIcon = new Image(new TextureRegionDrawable(itemAtlas.getSprite(59)));
                 orbIcon.setAlign(8);
-                Label goldLabel = new Label(this.progress[i].gold + "", this.skin);
+                Label goldLabel = new Label(progress[i].gold + "", this.skin);
                 goldLabel.setFontScale(fontScale);
-                Label deathLabel = new Label(this.progress[i].deaths + "", this.skin);
+                Label deathLabel = new Label(progress[i].deaths + "", this.skin);
                 deathLabel.setFontScale(fontScale);
-                Label winsLabel = new Label(this.progress[i].wins + "", this.skin);
+                Label winsLabel = new Label(progress[i].wins + "", this.skin);
                 winsLabel.setFontScale(fontScale);
                 Table progressTable = new Table(this.skin);
                 progressTable.add(goldIcon).width(20.0F).height(20.0F).align(8);
                 progressTable.add(goldLabel).width(45.0F);
                 progressTable.add(skullIcon).width(20.0F).height(20.0F).align(8);
                 progressTable.add(deathLabel).padLeft(2.0F).width(45.0F);
-                if (this.progress[i].wins > 0) {
+                if (progress[i].wins > 0) {
                     progressTable.add(orbIcon).width(20.0F).height(20.0F).align(8);
                     progressTable.add(winsLabel).padLeft(2.0F).width(45.0F);
                 }
@@ -438,28 +438,28 @@ public class MainMenuScreen extends BaseScreen {
         this.gamepadSelectionIndex = saveLoc;
 
         for(int i = 0; i < this.saveSlotUi.size; ++i) {
-            ((Table)this.saveSlotUi.get(i)).setColor(Color.GRAY);
+            this.saveSlotUi.get(i).setColor(Color.GRAY);
         }
 
         if (selected != null) {
             selected.setColor(Color.WHITE);
         }
 
-        if (this.saveGames[saveLoc] != this.errorPlayer) {
+        if (saveGames[saveLoc] != this.errorPlayer) {
             this.playButton.setVisible(true);
         } else {
             this.playButton.setVisible(false);
         }
 
-        this.selectedSave = saveLoc;
-        this.deleteButton.setVisible(this.saveGames[this.selectedSave] != null || this.progress[this.selectedSave] != null);
+        selectedSave = saveLoc;
+        this.deleteButton.setVisible(saveGames[selectedSave] != null || progress[selectedSave] != null);
         Audio.playSound("/ui/ui_button_click.mp3", 0.3F);
     }
 
     public void playButtonEvent(boolean force) {
         Audio.playSound("/ui/ui_button_click.mp3", 0.3F);
         if (!force) {
-            Progression p = this.progress[this.selectedSave];
+            Progression p = progress[selectedSave];
             if (p != null) {
                 Array<String> missing = p.checkForMissingMods();
                 if (missing.size > 0) {
@@ -472,7 +472,7 @@ public class MainMenuScreen extends BaseScreen {
                     String missingModsString = "";
 
                     for(int i = 0; i < missing.size; ++i) {
-                        String m = (String)missing.get(i);
+                        String m = missing.get(i);
                         int maxModLength = 30;
                         if (m.length() > maxModLength) {
                             m = m.substring(0, maxModLength - 3) + "...";
@@ -494,7 +494,7 @@ public class MainMenuScreen extends BaseScreen {
             }
         }), Actions.delay(1.75F), Actions.addAction(new Action() {
             public boolean act(float v) {
-                GameApplication.SetScreen(new LoadingScreen(MainMenuScreen.this.saveGames[MainMenuScreen.this.selectedSave] == null ? StringManager.get("screens.MainMenuScreen.creatingDungeon") : StringManager.get("screens.MainMenuScreen.loadingSaveSlot"), MainMenuScreen.this.selectedSave));
+                GameApplication.SetScreen(new LoadingScreen(saveGames[selectedSave] == null ? StringManager.get("screens.MainMenuScreen.creatingDungeon") : StringManager.get("screens.MainMenuScreen.loadingSaveSlot"), selectedSave));
                 return true;
             }
         })));
@@ -509,10 +509,10 @@ public class MainMenuScreen extends BaseScreen {
             };
             this.showModal(StringManager.get("screens.MainMenuScreen.eraseSaveWarning"), StringManager.get("screens.MainMenuScreen.eraseButton"), StringManager.get("screens.MainMenuScreen.cancelButton"), eraseListener, 220);
         } else {
-            this.saveGames[this.selectedSave] = null;
-            this.progress[this.selectedSave] = null;
-            this.deleteSavegame(this.selectedSave);
-            this.selectedSave = null;
+            saveGames[selectedSave] = null;
+            progress[selectedSave] = null;
+            this.deleteSavegame(selectedSave);
+            selectedSave = null;
         }
     }
 
@@ -523,24 +523,24 @@ public class MainMenuScreen extends BaseScreen {
 
         int i;
         FileHandle file;
-        for(i = 0; i < this.saveGames.length; ++i) {
+        for(i = 0; i < saveGames.length; ++i) {
             file = Game.getFile(baseSaveDir + "/" + i + "/player.dat");
             if (file.exists()) {
                 try {
-                    this.saveGames[i] = (Player)Game.fromJson(Player.class, file);
+                    saveGames[i] = Game.fromJson(Player.class, file);
                 } catch (Exception var7) {
-                    this.saveGames[i] = this.errorPlayer;
+                    saveGames[i] = this.errorPlayer;
                 }
             }
         }
 
-        for(i = 0; i < this.saveGames.length; ++i) {
+        for(i = 0; i < saveGames.length; ++i) {
             file = Game.getFile(baseSaveDir + "/game_" + i + ".dat");
             if (file.exists()) {
                 try {
-                    this.progress[i] = (Progression)Game.fromJson(Progression.class, file);
+                    progress[i] = Game.fromJson(Progression.class, file);
                 } catch (Exception var6) {
-                    this.progress[i] = null;
+                    progress[i] = null;
                 }
             }
         }
@@ -556,7 +556,6 @@ public class MainMenuScreen extends BaseScreen {
             Gdx.app.log("DelverLifeCycle", "Deleting savegame " + file.path());
             file.deleteDirectory();
         } catch (Exception var5) {
-            ;
         }
 
         try {
@@ -565,7 +564,6 @@ public class MainMenuScreen extends BaseScreen {
             Gdx.app.log("DelverLifeCycle", "Deleting progress " + file.path());
             file.delete();
         } catch (Exception var4) {
-            ;
         }
 
         this.makeContent();
@@ -575,7 +573,7 @@ public class MainMenuScreen extends BaseScreen {
         if (Game.modManager == null) {
             return false;
         } else {
-            return Game.modManager.modsFound == null ? false : Game.modManager.hasExtraMods();
+            return Game.modManager.modsFound != null && Game.modManager.hasExtraMods();
         }
     }
 }

@@ -280,6 +280,27 @@ public class DebugOverlay extends WindowOverlay {
         table.row();
     }
 
+    protected void addHealItem(Table table) {
+        final Label name = new Label("HEAL", (LabelStyle)this.skin.get("input", LabelStyle.class));
+        name.addListener(new ClickListener() {
+            public void clicked(InputEvent event, float x, float y) {
+                player.hp = player.getMaxHp();
+                player.clearStatusEffects();
+            }
+
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                name.setStyle((LabelStyle)DebugOverlay.this.skin.get("inputover", LabelStyle.class));
+            }
+
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                name.setStyle((LabelStyle)DebugOverlay.this.skin.get("input", LabelStyle.class));
+            }
+        });
+        this.buttonOrder.add(name);
+        table.add(name).align(8);
+        table.row();
+    }
+
     protected void addItems(Table table, final String category, final String text, final Array<Item> items) {
         final Label name = new Label(text.toUpperCase(), (LabelStyle)this.skin.get("input", LabelStyle.class));
         name.addListener(new ClickListener() {
@@ -343,7 +364,6 @@ public class DebugOverlay extends WindowOverlay {
                 copy.za = 0.01F;
                 copy.Init(Game.instance.level, DebugOverlay.this.player.level);
                 Game.instance.level.entities.add(copy);
-                //OverlayManager.instance.remove(DebugOverlay.this);
             }
 
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
@@ -386,58 +406,73 @@ public class DebugOverlay extends WindowOverlay {
             uniques.addAll(Game.instance.itemManager.unique);
         }
 
+        Array<Item> currency = new Array();
+
+        currency.add(new Gold());
+        currency.add(new Gold(50));
+        currency.add(new Gold(100));
+
         HashMap<String, Array<Item>> armors = new HashMap();
-        Iterator var10 = Game.instance.itemManager.armor.entrySet().iterator();
+
 
         Array junk;
-        while(var10.hasNext()) {
-            Entry<String, Array<Armor>> entry = (Entry)var10.next();
+        for (Object o2 : Game.instance.itemManager.armor.entrySet()) {
+            Entry<String, Array<Armor>> entry = (Entry)o2;
             junk = new Array();
             junk.addAll((Array)entry.getValue());
             armors.put(entry.getKey(), junk);
         }
 
         HashMap<String, Array<Item>> melee = new HashMap();
-        Iterator var16 = Game.instance.itemManager.melee.entrySet().iterator();
 
-        while(var16.hasNext()) {
-            Entry<String, Array<Sword>> entry = (Entry)var16.next();
+        for (Object o1 : Game.instance.itemManager.melee.entrySet()) {
+            Entry<String, Array<Sword>> entry = (Entry) o1;
             Array<Item> items = new Array();
-            items.addAll((Array)entry.getValue());
+            items.addAll((Array) entry.getValue());
             melee.put(entry.getKey(), items);
         }
 
         HashMap<String, Array<Item>> ranged = new HashMap();
-        Iterator var19 = Game.instance.itemManager.ranged.entrySet().iterator();
 
-        while(var19.hasNext()) {
-            Entry<String, Array<Item>> entry = (Entry)var19.next();
+        for (Object o : Game.instance.itemManager.ranged.entrySet()) {
+            Entry<String, Array<Item>> entry = (Entry) o;
             Array<Item> items = new Array();
-            items.addAll((Array)entry.getValue());
+            items.addAll((Array) entry.getValue());
             ranged.put(entry.getKey(), items);
         }
 
         junk = new Array();
         junk.addAll(Game.instance.itemManager.junk);
-        this.addItem(contentTable, "MONSTERS", Game.instance.monsterManager.monsters);
-        this.addItems(contentTable, "", "WANDS", wands);
-        this.addItems(contentTable, "ARMOR", armors);
+
         this.addItems(contentTable, "MELEE", melee);
+        this.addItems(contentTable, "ARMOR", armors);
         this.addItems(contentTable, "RANGED", ranged);
-        this.addItems(contentTable, "", "FOOD", food);
         this.addItems(contentTable, "", "SCROLLS", scrolls);
+        this.addItems(contentTable, "", "WANDS", wands);
+        this.addItem(contentTable, "MONSTERS", Game.instance.monsterManager.monsters);
+
+        this.addItems(contentTable, "", "FOOD", food);
         this.addItems(contentTable, "", "POTIONS", potions);
         this.addItems(contentTable, "", "UNIQUES", uniques);
+        this.addItems(contentTable, "", "CURRENCY", currency);
         this.addItems(contentTable, "", "JUNK", junk);
         this.addItem(contentTable, "ORB", (Item)(new QuestItem()));
-        this.addItem(contentTable, "Gold", (Item)(new Gold(200)));
-        this.addLevelUpItem(contentTable, "LEVEL UP!");
+
+
+        this.addItems(contentTable, "", "", new Array()); // empty
         this.addFlightItem(contentTable, "TOGGLE FLIGHT");
         this.addNoClipItem(contentTable, "TOGGLE NOCLIP");
+        this.addItems(contentTable, "", "", new Array()); // empty
         this.addGodModeOption(contentTable, "TOGGLE GODMODE");
         this.addNoTargetOption(contentTable, "TOGGLE NOTARGET");
+        this.addItems(contentTable, "", "", new Array()); // empty
+
+        this.addLevelUpItem(contentTable, "LEVEL UP!");
+        this.addHealItem(contentTable);
         this.addRefreshItem(contentTable);
         this.addSuicideItem(contentTable);
+
+
         contentTable.add(this.doneBtn).padTop(4.0F).align(1).colspan(2);
         this.buttonOrder.add(this.doneBtn);
         return contentTable;
@@ -457,11 +492,10 @@ public class DebugOverlay extends WindowOverlay {
         Label title = new Label(titleText, (LabelStyle)this.skin.get(LabelStyle.class));
         contentTable.add(title).colspan(2).padBottom(4.0F);
         contentTable.row();
-        Iterator var6 = objects.entrySet().iterator();
 
-        while(var6.hasNext()) {
-            Entry<String, Array<Monster>> entry = (Entry)var6.next();
-            this.addMonsters(contentTable, (String)entry.getKey(), (Array)entry.getValue());
+        for (Object o : objects.entrySet()) {
+            Entry<String, Array<Monster>> entry = (Entry) o;
+            this.addMonsters(contentTable, (String) entry.getKey(), (Array) entry.getValue());
         }
 
         contentTable.add(this.doneBtn).padTop(4.0F).align(1).colspan(2);
@@ -626,7 +660,10 @@ public class DebugOverlay extends WindowOverlay {
 
     }
 
+
     public void tick(float delta) {
+        super.tick(delta);
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             OverlayManager.instance.remove(DebugOverlay.this);
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
