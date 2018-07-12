@@ -124,7 +124,6 @@ public class MainMenuScreen extends BaseScreen {
             public void clicked(InputEvent event, float x, float y)
             {
                 MainMenuScreen.this.quitButtonEvent(false);
-
             }
         });
         TextButton modsButton = new TextButton(MessageFormat.format(paddedButtonText, "Mods"), this.skin);
