@@ -105,7 +105,7 @@ public class LwjglApplication
         config.title = title;
         config.width = width;
         config.height = height;
-        config.vSyncEnabled = Config.useVsync;
+        config.vSyncEnabled = true;
         return config;
     }
 
@@ -115,7 +115,7 @@ public class LwjglApplication
         {
             public void run()
             {
-                LwjglApplication.this.graphics.setVSync(Config.useVsync);
+                LwjglApplication.this.graphics.setVSync(LwjglApplication.this.graphics.config.vSyncEnabled);
 
                 try {
                     LwjglApplication.this.mainLoop();
@@ -257,7 +257,7 @@ public class LwjglApplication
                 }
             }
             if (frameRate > 0) {
-                Display.sync(Config.getMaxFPS(frameRate));
+                Display.sync(frameRate);
             }
         }
         synchronized (lifecycleListeners)

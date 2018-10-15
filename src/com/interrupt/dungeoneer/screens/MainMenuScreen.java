@@ -448,6 +448,10 @@ public class MainMenuScreen extends BaseScreen {
             if (selectedSave != null) {
                 GameApplication.SetScreen(new LoadingScreen(saveGames[selectedSave] == null ? "CREATING DUNGEON" : "LOADING", selectedSave));
             }
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.FORWARD_DEL)) {
+            if (this.deleteButton.isVisible()) {
+                deleteButtonEvent(false);
+            }
         }
 
         this.ui.act(delta);
