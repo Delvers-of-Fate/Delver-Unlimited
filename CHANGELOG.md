@@ -4,11 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.7.0] - 2018-10-18
+Eeem.. We're back? Sorry for the delays, development has not been at its peak the past months. We hope to revamp work some new stuff sooner or later!
 ### Added
 - Ported to Delver v1.04
 - Checks for the history entries
 - `Open working directory` in DelvEdit
+
+### Changed
+- Removed unused assets
 
 ## [1.6.0] - 2017-11-01
 ### Added
