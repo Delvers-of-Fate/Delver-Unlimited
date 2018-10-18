@@ -8,9 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FillViewport;
@@ -18,9 +20,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.interrupt.api.steam.SteamApi;
 import com.interrupt.dungeoneer.editor.Editor;
 import com.interrupt.dungeoneer.editor.EditorFrame;
-import com.interrupt.dungeoneer.editor.EditorFrame.MoveMode;
 import com.interrupt.dungeoneer.editor.EditorRightClickEntitiesMenu;
 import com.interrupt.dungeoneer.editor.EditorRightClickMenu;
+import com.interrupt.dungeoneer.editor.EditorFrame.MoveMode;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuAccelerator;
 import com.interrupt.dungeoneer.editor.ui.menu.MenuItem;
 import com.interrupt.dungeoneer.editor.ui.menu.Scene2dMenu;
@@ -28,16 +30,17 @@ import com.interrupt.dungeoneer.editor.ui.menu.Scene2dMenuBar;
 import com.interrupt.dungeoneer.entities.Entity;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
+import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.generator.RoomGenerator;
 import net.cotd.delverunlimited.helper.history.History;
 import net.cotd.delverunlimited.helper.history.HistoryHelper;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Iterator;
+import javax.swing.JFrame;
 
 public class EditorUi {
     Stage stage;
@@ -50,17 +53,50 @@ public class EditorUi {
     private Table sidebarTable = null;
     private Cell propertiesCell = null;
     Scene2dMenu rightClickMenu;
-    static Scene2dMenuBar menuBar;
+    Scene2dMenuBar menuBar;
     ActionListener resizeWindowAction;
     ActionListener newWindowAction;
     ActionListener pickAction;
     ActionListener uploadModAction;
     ActionListener setThemeAction;
+    ActionListener setFogSettingsAction;
     ActionListener openWorkingDir;
     static MenuItem historyBar;
     ActionListener openRightClickMenu;
     private Vector2 propertiesSize = new Vector2();
+    private float rightClickTime;
+    private EditorFrame editorFrame;
     Viewport viewport;
+    private static String lastGeneratedLevelType = "DUNGEON";
+    private static String lastGeneratedLevelRoomType = "DUNGEON_ROOMS";
+    private static String lastGeneratedRoomType = "DUNGEON_ROOMS";
+
+    private ActionListener makeLevelGeneratorAction(final String theme, final String roomGenerator, final EditorFrame editorFrame) {
+        return new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                editorFrame.getLevel().editorMarkers.clear();
+                editorFrame.getLevel().entities.clear();
+                editorFrame.getLevel().theme = theme;
+                editorFrame.getLevel().generated = true;
+                editorFrame.getLevel().dungeonLevel = 0;
+                editorFrame.getLevel().crop(0, 0, 85, 85);
+                editorFrame.getLevel().roomGeneratorChance = 0.4F;
+                editorFrame.getLevel().roomGeneratorType = roomGenerator;
+                editorFrame.getLevel().generate(Source.EDITOR);
+                editorFrame.refresh();
+                EditorUi.lastGeneratedLevelType = theme;
+                EditorUi.lastGeneratedLevelRoomType = roomGenerator;
+            }
+        };
+    }
+
+    private ActionListener makeAnotherLevelGeneratorAction(final EditorFrame editorFrame) {
+        return new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                EditorUi.this.makeLevelGeneratorAction(EditorUi.lastGeneratedLevelType, EditorUi.lastGeneratedLevelRoomType, editorFrame).actionPerformed(actionEvent);
+            }
+        };
+    }
 
     private ActionListener makeRoomGeneratorAction(final String generatorType, final EditorFrame editorFrame) {
         return new ActionListener() {
@@ -68,10 +104,21 @@ public class EditorUi {
                 editorFrame.getLevel().editorMarkers.clear();
                 editorFrame.getLevel().entities.clear();
                 Level generatedLevel = new Level(17, 17);
+                generatedLevel.roomGeneratorType = generatorType;
                 RoomGenerator g = new RoomGenerator(generatedLevel, generatorType);
-                g.generate(false, false, false, true);
+                g.generate(true, true, true, true);
+                editorFrame.getLevel().crop(0, 0, generatedLevel.width, generatedLevel.height);
                 editorFrame.getLevel().paste(generatedLevel, 0, 0);
                 editorFrame.refresh();
+                EditorUi.lastGeneratedRoomType = generatorType;
+            }
+        };
+    }
+
+    private ActionListener makeAnotherRoomGeneratorAction(final EditorFrame editorFrame) {
+        return new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                EditorUi.this.makeRoomGeneratorAction(EditorUi.lastGeneratedRoomType, editorFrame).actionPerformed(actionEvent);
             }
         };
     }
@@ -98,19 +145,17 @@ public class EditorUi {
         defaultSkin = new Skin(Game.getInternal("ui/editor/HoloSkin/Holo-dark-hdpi.json"), new TextureAtlas(Game.getInternal("ui/editor/HoloSkin/Holo-dark-hdpi.atlas")));
         mediumSkin = new Skin(Game.getInternal("ui/editor/HoloSkin/Holo-dark-mdpi.json"), new TextureAtlas(Game.getInternal("ui/editor/HoloSkin/Holo-dark-mdpi.atlas")));
         smallSkin = new Skin(Game.getInternal("ui/editor/HoloSkin/Holo-dark-ldpi.json"), new TextureAtlas(Game.getInternal("ui/editor/HoloSkin/Holo-dark-ldpi.atlas")));
-        this.viewport = new FillViewport((float) Gdx.graphics.getWidth(), (float) Gdx.graphics.getHeight());
+        this.viewport = new FillViewport((float)Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight());
         this.stage = new Stage(this.viewport);
         this.mainTable = new Table();
         this.mainTable.setFillParent(true);
         this.mainTable.align(10);
-
-
-
+        this.editorFrame = editorFrame;
         this.newWindowAction = new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 NewLevelDialog newLevelDialog = new NewLevelDialog(EditorUi.smallSkin) {
                     protected void result(Object object) {
-                        if (((Boolean) object)) {
+                        if ((Boolean)object) {
                             editorFrame.createNewLevel(this.getLevelWidth(), this.getLevelHeight());
                             editor.createdNewLevel();
                         }
@@ -124,7 +169,7 @@ public class EditorUi {
             public void actionPerformed(ActionEvent event) {
                 NewLevelDialog newLevelDialog = new NewLevelDialog(EditorUi.smallSkin) {
                     protected void result(Object object) {
-                        if (((Boolean) object)) {
+                        if ((Boolean)object) {
                             editorFrame.resizeLevel(this.getLevelWidth(), this.getLevelHeight());
                         }
 
@@ -137,6 +182,15 @@ public class EditorUi {
             public void actionPerformed(ActionEvent event) {
                 UploadModDialog uploadModDialog = new UploadModDialog("Upload Mod to Steam Workshop", EditorUi.smallSkin);
                 uploadModDialog.show(EditorUi.this.stage);
+            }
+        };
+        this.setFogSettingsAction = new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                SetFogDialog fogDialog = new SetFogDialog(EditorUi.smallSkin, editorFrame.getLevel()) {
+                    protected void result(Object object) {
+                    }
+                };
+                fogDialog.show(EditorUi.this.stage);
             }
         };
         this.setThemeAction = new ActionListener() {
@@ -170,10 +224,10 @@ public class EditorUi {
                 }
             }
         };
-
         this.menuBar = new Scene2dMenuBar(smallSkin);
         this.menuBar.addItem(new MenuItem("File", smallSkin)
                 .addItem(new MenuItem("New", smallSkin, this.newWindowAction).setAccelerator(new MenuAccelerator(42, true, false)))
+                .addSeparator()
                 .addItem(new MenuItem("Open", smallSkin, editor.openAction).setAccelerator(new MenuAccelerator(43, true, false)))
                 .addItem(new MenuItem("Open working directory", smallSkin, this.openWorkingDir))
                 .addSeparator()
@@ -217,11 +271,17 @@ public class EditorUi {
                         .addItem(new MenuItem("Clamp Z", smallSkin, editor.zDragMode).setAccelerator(new MenuAccelerator(54, false, false)))
                         .addItem(new MenuItem("Rotate", smallSkin, editor.rotateMode).setAccelerator(new MenuAccelerator(46, false, false))))
 
-                .addItem(new MenuItem("Generate Room", smallSkin)
+                .addItem(new MenuItem("Generate Room", smallSkin, makeAnotherRoomGeneratorAction(editorFrame)).setAccelerator(new MenuAccelerator(35, false, true))
                         .addItem(new MenuItem("Dungeon Room", smallSkin, makeRoomGeneratorAction("DUNGEON_ROOMS", editorFrame)))
                         .addItem(new MenuItem("Cave Room", smallSkin, makeRoomGeneratorAction("CAVE_ROOMS", editorFrame)))
                         .addItem(new MenuItem("Sewer Room", smallSkin, makeRoomGeneratorAction("SEWER_ROOMS", editorFrame)))
-                        .addItem(new MenuItem("Temple Room", smallSkin, makeRoomGeneratorAction("TEMPLE_ROOMS", editorFrame)).setAccelerator(new MenuAccelerator(35, false, true)))));
+                        .addItem(new MenuItem("Temple Room", smallSkin, makeRoomGeneratorAction("TEMPLE_ROOMS", editorFrame))))
+
+                .addItem(new MenuItem("Generate Level", smallSkin, makeAnotherLevelGeneratorAction(editorFrame))
+                        .addItem(new MenuItem("Dungeon", smallSkin, makeLevelGeneratorAction("DUNGEON", "DUNGEON_ROOMS", editorFrame)))
+                        .addItem(new MenuItem("Cave", smallSkin, makeLevelGeneratorAction("CAVE", "CAVE_ROOMS", editorFrame)))
+                        .addItem(new MenuItem("Sewer", smallSkin, makeLevelGeneratorAction("SEWER", "SEWER_ROOMS", editorFrame)))
+                        .addItem(new MenuItem("Temple", smallSkin, makeLevelGeneratorAction("UNDEAD", "TEMPLE_ROOMS", editorFrame)))));
 
         this.menuBar.addItem(new MenuItem("View", smallSkin)
 
@@ -234,7 +294,8 @@ public class EditorUi {
                 .addItem(new MenuItem("Test Level", smallSkin, editor.playAction).setAccelerator(new MenuAccelerator(44, false, false)))
                 .addSeparator()
                 .addItem(new MenuItem("Resize Level", smallSkin, this.resizeWindowAction))
-                .addItem(new MenuItem("Set Theme", smallSkin, this.setThemeAction)));
+                .addItem(new MenuItem("Set Theme", smallSkin, this.setThemeAction))
+                .addItem(new MenuItem("Set Fog Settings", smallSkin, this.setFogSettingsAction)));
         if (SteamApi.api.isAvailable()) {
             this.menuBar.addItem(new MenuItem("Mods", smallSkin)
                     .addItem(new MenuItem("Upload Mod to Workshop", smallSkin, this.uploadModAction)));
@@ -249,7 +310,7 @@ public class EditorUi {
         menuBar.pack();
 
         this.mainTable.setZIndex(1000);
-        this.mainTable.add(menuBar);
+        this.mainTable.add(this.menuBar);
         this.stage.addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 Actor touched = EditorUi.this.stage.hit(x, y, false);
@@ -268,31 +329,7 @@ public class EditorUi {
                 if (button == 0 && (touched == null || EditorUi.this.rightClickMenu != null && !touched.isDescendantOf(EditorUi.this.rightClickMenu))) {
                     EditorUi.this.hideContextMenu();
                 } else if (button == 1) {
-                    EditorUi.this.hideContextMenu();
-                    if (editorFrame.getPickedEntity() == null && editorFrame.getHoveredEntity() == null) {
-                        editorFrame.setSelected(true);
-                        EditorUi.this.showContextMenu(x, y, new EditorRightClickEntitiesMenu(EditorUi.smallSkin, (float)editorFrame.getSelectionX(), (float)editorFrame.getSelectionY(), editorFrame, editorFrame.getLevel()));
-                    } else {
-                        Entity sel = editorFrame.getPickedEntity();
-                        if (sel == null) {
-                            sel = editorFrame.getHoveredEntity();
-                        }
-
-                        if (editorFrame.getMoveMode() == MoveMode.ROTATE) {
-                            editorFrame.clearEntitySelection();
-                        } else {
-                            EditorRightClickMenu menu;
-                            if (editorFrame.getAdditionalSelectedEntities().size == 0) {
-                                menu = new EditorRightClickMenu(sel, editorFrame, (JFrame)null, editorFrame.getLevel());
-                                EditorUi.this.showContextMenu(x, y, menu);
-                            } else {
-                                menu = new EditorRightClickMenu(sel, editorFrame.getAdditionalSelectedEntities(), editorFrame, (JFrame)null, editorFrame.getLevel());
-                                EditorUi.this.showContextMenu(x, y, menu);
-                            }
-                        }
-                    }
-
-                    return true;
+                    EditorUi.this.rightClickTime = editorFrame.time;
                 }
 
                 return touched != EditorUi.this.mainTable;
@@ -300,18 +337,16 @@ public class EditorUi {
 
             public boolean keyDown(InputEvent event, int keycode) {
                 if (keycode == 131) {
-                    Iterator var3 = EditorUi.this.stage.getActors().iterator();
 
-                    while(var3.hasNext()) {
-                        Actor actor = (Actor)var3.next();
+                    for (Object actor : EditorUi.this.stage.getActors()) {
                         if (actor instanceof TextureRegionPicker) {
-                            TextureRegionPicker picker = (TextureRegionPicker)actor;
+                            TextureRegionPicker picker = (TextureRegionPicker) actor;
                             picker.hide();
                             return true;
                         }
 
                         if (actor instanceof Dialog) {
-                            ((Dialog)actor).hide();
+                            ((Dialog) actor).hide();
                             return true;
                         }
                     }
@@ -388,8 +423,9 @@ public class EditorUi {
     }
 
     public void resize(float width, float height) {
-        this.viewport.setScreenWidth(Gdx.graphics.getWidth());
-        this.viewport.setScreenHeight(Gdx.graphics.getHeight());
+        this.viewport.setWorldSize(width, height);
+        this.viewport.update((int)width, (int)height, true);
+        this.mainTable.pack();
         if (this.entityPropertiesPane != null && this.propertiesMenu != null) {
             boolean fillsStage = this.propertiesSize.y > this.stage.getHeight() - this.menuBar.getHeight();
             this.entityPropertiesPane.setSize(this.propertiesSize.x + (fillsStage ? 60.0F : 30.0F), this.propertiesSize.y);
@@ -436,4 +472,38 @@ public class EditorUi {
         return smallSkin;
     }
 
+    public void touchUp(int x, int y, int pointer, int button) {
+        if (button == 1) {
+            this.hideContextMenu();
+            y = (int)this.stage.getHeight() - y;
+            float currentTime = this.editorFrame.time;
+            if ((double)(currentTime - this.rightClickTime) > 0.5D) {
+                return;
+            }
+
+            if (this.editorFrame.getPickedEntity() == null && this.editorFrame.getHoveredEntity() == null) {
+                this.editorFrame.setSelected(true);
+                this.showContextMenu((float)x, (float)y, new EditorRightClickEntitiesMenu(smallSkin, (float)this.editorFrame.getSelectionX(), (float)this.editorFrame.getSelectionY(), this.editorFrame, this.editorFrame.getLevel()));
+            } else {
+                Entity sel = this.editorFrame.getPickedEntity();
+                if (sel == null) {
+                    sel = this.editorFrame.getHoveredEntity();
+                }
+
+                if (this.editorFrame.getMoveMode() == MoveMode.ROTATE) {
+                    this.editorFrame.clearEntitySelection();
+                } else {
+                    EditorRightClickMenu menu;
+                    if (this.editorFrame.getAdditionalSelectedEntities().size == 0) {
+                        menu = new EditorRightClickMenu(sel, this.editorFrame, (JFrame)null, this.editorFrame.getLevel());
+                        this.showContextMenu((float)x, (float)y, menu);
+                    } else {
+                        menu = new EditorRightClickMenu(sel, this.editorFrame.getAdditionalSelectedEntities(), this.editorFrame, (JFrame)null, this.editorFrame.getLevel());
+                        this.showContextMenu((float)x, (float)y, menu);
+                    }
+                }
+            }
+        }
+
+    }
 }

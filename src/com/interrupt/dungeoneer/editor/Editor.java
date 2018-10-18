@@ -1,17 +1,14 @@
 package com.interrupt.dungeoneer.editor;
 
-import com.badlogic.gdx.Files.FileType;
+import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.badlogic.gdx.files.FileHandle;
-import com.interrupt.dungeoneer.editor.EditorFrame.DragMode;
-import com.interrupt.dungeoneer.editor.EditorFrame.MoveMode;
 import com.interrupt.dungeoneer.editor.history.EditorHistory;
 import com.interrupt.dungeoneer.editor.ui.menu.Scene2dMenuBar;
 import com.interrupt.dungeoneer.game.Game;
 import com.interrupt.dungeoneer.game.Level;
-import com.interrupt.dungeoneer.game.Level.Source;
 import com.interrupt.dungeoneer.serializers.KryoSerializer;
 import net.cotd.delverunlimited.helper.FileChooserHelper;
 import net.cotd.delverunlimited.helper.history.History;
@@ -23,9 +20,10 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Timer;
 
-public class Editor {
+public class Editor
+{
     private static EditorFrame editorFrame;
-    private final JFrame frame = new JFrame("DelvEdit");
+    private final JFrame frame;
     private static String currentFileName = null;
     public static String currentDirectory = null;
     public ActionListener saveAction;
@@ -58,25 +56,44 @@ public class Editor {
     public ActionListener flattenCeiling;
     public ActionListener toggleSimulation;
     public ActionListener exitAction;
-    private static Timer saveMessageTimer = new Timer();
 
-    public Editor(LwjglApplicationConfiguration config) {
-        this.frame.setDefaultCloseOperation(2);
-        this.editorFrame = new EditorFrame(this.frame, this);
-        new LwjglApplication(this.editorFrame, config);
-        this.initActions();
+    public enum EditorMode
+    {
+        Carve,  Paint;
+
+        EditorMode() {}
     }
 
+    private static Timer saveMessageTimer = new Timer();
 
-    private void initActions() {
-        this.flattenFloor = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.flattenFloor();
+    public Editor(LwjglApplicationConfiguration config)
+    {
+        this.frame = new JFrame("DelvEdit");
+        this.frame.setDefaultCloseOperation(2);
+
+
+        editorFrame = new EditorFrame(this.frame, this);
+        new LwjglApplication(editorFrame, config);
+
+        initActions();
+    }
+
+    private void initActions()
+    {
+        Editor editor = this;
+
+        this.flattenFloor = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.flattenFloor();
             }
         };
-        this.flattenCeiling = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.flattenCeiling();
+        this.flattenCeiling = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.flattenCeiling();
             }
         };
         /* D-U */
@@ -86,23 +103,26 @@ public class Editor {
                 Gdx.app.exit();
             }
         };
-        this.saveAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                if(Editor.this.currentFileName != null && Editor.this.currentDirectory != null) {
+        this.saveAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
+            {
+                if(currentFileName != null && currentDirectory != null) {
 
-                    Editor.this.editorFrame.save(Editor.this.currentDirectory + File.separator + Editor.this.currentFileName);
-                    Editor.this.frame.setTitle("DelvEdit - " + Editor.this.currentFileName);
+                    editorFrame.save(currentDirectory + File.separator + currentFileName);
+                    Editor.this.frame.setTitle("DelvEdit - " + currentFileName);
                 } else {
                     Editor.this.saveAsAction.actionPerformed(event);
                 }
-
             }
         };
-        this.saveAsAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                if(Editor.this.currentDirectory == null) {
-                    Editor.this.currentDirectory = (new FileHandle(".")).file().getAbsolutePath();
-                    Editor.this.currentDirectory = Editor.this.currentDirectory.substring(0, Editor.this.currentDirectory.length() - 2);
+        this.saveAsAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
+            {
+                if(currentDirectory == null) {
+                    currentDirectory = (new FileHandle(".")).file().getAbsolutePath();
+                    currentDirectory = currentDirectory.substring(0, currentDirectory.length() - 2);
                 }
 
                 String suggestedName = currentFileName;
@@ -113,10 +133,10 @@ public class Editor {
                 File selectedDir = FileChooserHelper.saveFileDialog(new File(currentDirectory), suggestedName);
                 try {
                     if (selectedDir == null) throw new NullPointerException();
-                    Editor.this.editorFrame.save(selectedDir.getAbsolutePath());
-                    Editor.this.currentDirectory = selectedDir.getParent();
-                    Editor.this.currentFileName = selectedDir.getName();
-                    Scene2dMenuBar.setTitleLabel(Editor.this.currentFileName);
+                    editorFrame.save(selectedDir.getAbsolutePath());
+                    currentDirectory = selectedDir.getParent();
+                    currentFileName = selectedDir.getName();
+                    Scene2dMenuBar.setTitleLabel(currentFileName);
                 } catch (NullPointerException ex) {
                     Gdx.app.log("DelvEdit", "Selected null!");
                 } catch (Exception var4) {
@@ -124,149 +144,192 @@ public class Editor {
                 }
             }
         };
-        this.openAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
+        this.openAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
+            {
                 openInEditor(null, false);
             }
         };
-        this.rotateLeftAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                Editor.this.editorFrame.level.rotate90();
-                Editor.this.editorFrame.refresh();
+        this.rotateLeftAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
+            {
+                editorFrame.level.rotate90();
+                editorFrame.refresh();
             }
         };
-        this.rotateRightAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                Editor.this.editorFrame.level.rotate90();
-                Editor.this.editorFrame.level.rotate90();
-                Editor.this.editorFrame.level.rotate90();
-                Editor.this.editorFrame.refresh();
+        this.rotateRightAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
+            {
+                editorFrame.level.rotate90();
+                editorFrame.level.rotate90();
+                editorFrame.level.rotate90();
+                editorFrame.refresh();
             }
         };
-        this.playAction = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                Editor.this.editorFrame.testLevel();
+        this.playAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent event)
+            {
+                editorFrame.testLevel();
             }
         };
-        this.carveAction = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.doCarve();
+        this.carveAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.doCarve();
             }
         };
-        this.paintAction = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.doPaint();
+        this.paintAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.doPaint();
             }
         };
-        this.deleteAction = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.doDelete();
+        this.deleteAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.doDelete();
             }
         };
-        this.planeHeightAction = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.setPlaneHeightMode();
+        this.planeHeightAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.setPlaneHeightMode();
             }
         };
-        this.vertexHeightAction = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.setVertexHeightMode();
+        this.vertexHeightAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.setVertexHeightMode();
             }
         };
-        this.vertexToggleAction = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.toggleVertexHeightMode();
+        this.vertexToggleAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.toggleVertexHeightMode();
             }
         };
-        this.undoAction = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.undo();
+        this.undoAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.undo();
             }
         };
-        this.redoAction = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.redo();
+        this.redoAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.redo();
             }
         };
-        this.toggleCollisionBoxesAction = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.toggleCollisionBoxes();
+        this.toggleCollisionBoxesAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.toggleCollisionBoxes();
             }
         };
-        this.toggleLightsAction = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.toggleLights();
+        this.toggleLightsAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.toggleLights();
             }
         };
-        this.escapeAction = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.clearSelection();
+        this.escapeAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.clearSelection();
             }
         };
-        this.rotateCeilTexAction = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.rotateCeilTex(1);
+        this.rotateCeilTexAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.rotateCeilTex(1);
             }
         };
-        this.rotateFloorTexAction = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.rotateFloorTex(1);
+        this.rotateFloorTexAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.rotateFloorTex(1);
             }
         };
-        this.rotateWallAngle = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.rotateAngle();
+        this.rotateWallAngle = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.rotateAngle();
             }
         };
-        this.copyAction = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.copy();
+        this.copyAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.copy();
             }
         };
-        this.pasteAction = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.paste();
+        this.pasteAction = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.paste();
             }
         };
-        this.toggleSimulation = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.toggleSimulation();
+        this.toggleSimulation = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.toggleSimulation();
             }
         };
-        this.xDragMode = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.setDragMode(DragMode.X);
+        this.xDragMode = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.setDragMode(EditorFrame.DragMode.X);
             }
         };
-        this.yDragMode = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.setDragMode(DragMode.Y);
+        this.yDragMode = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.setDragMode(EditorFrame.DragMode.Y);
             }
         };
-        this.zDragMode = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.setDragMode(DragMode.Z);
+        this.zDragMode = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.setDragMode(EditorFrame.DragMode.Z);
             }
         };
-        this.rotateMode = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                Editor.this.editorFrame.setMoveMode(MoveMode.ROTATE);
+        this.rotateMode = new ActionListener()
+        {
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                editorFrame.setMoveMode(EditorFrame.MoveMode.ROTATE);
             }
         };
     }
 
-    public void createdNewLevel() {
-        this.currentDirectory = null;
-        this.currentFileName = null;
+    public void createdNewLevel()
+    {
+        currentDirectory = null;
+        currentFileName = null;
         Scene2dMenuBar.setTitleLabel("New Level");
-    }
-
-    public static enum EditorMode {
-        Carve,
-        Paint;
-
-        private EditorMode() {
-        }
     }
 
     public static void openInEditor(File levelFile, boolean fromHistory) {
@@ -289,58 +352,62 @@ public class Editor {
 
         try {
             if (selectedFile == null) throw new NullPointerException();
-            currentDirectory = selectedFile.getParent(); // C:\delverpath
+            currentDirectory = selectedFile.getParent(); // C:\current_directory
             currentFileName = selectedFile.getName();    // file_name.bin
             saveMessageTimer.cancel();
             String file = currentFileName;
             String dir = currentDirectory;
-            FileHandle level = Gdx.files.getFileHandle(selectedFile.getAbsolutePath(), FileType.Absolute);
+            FileHandle level = Gdx.files.getFileHandle(selectedFile.getAbsolutePath(), Files.FileType.Absolute);
+
             if (level.exists()) {
                 editorFrame.curFileName = level.path();
+
                 Scene2dMenuBar.setTitleLabel(currentFileName);
                 if (file.endsWith(".png")) {
                     String heightFile = dir + file.replace(".png", "-height.png");
-                    if (!Gdx.files.getFileHandle(heightFile, FileType.Absolute).exists()) {
+                    if (!Gdx.files.getFileHandle(heightFile, Files.FileType.Absolute).exists()) {
                         heightFile = dir + file.replace(".png", "_height.png");
-                        if (!Gdx.files.getFileHandle(heightFile, FileType.Absolute).exists()) {
+                        if (!Gdx.files.getFileHandle(heightFile, Files.FileType.Absolute).exists()) {
                             heightFile = null;
                         }
                     }
-
                     Level openLevel = new Level();
                     openLevel.loadForEditor(dir + file, heightFile);
                     editorFrame.level = openLevel;
                     editorFrame.refresh();
+
                     editorFrame.camX = (float) (openLevel.width / 2);
                     editorFrame.camZ = 4.5F;
                     editorFrame.camY = (float) (openLevel.height / 2);
-                } else {
-                    Level openLevelx;
-                    if (file.endsWith(".bin")) {
-                        openLevelx = KryoSerializer.loadLevel(level);
-                        openLevelx.init(Source.EDITOR);
-                        editorFrame.level = openLevelx;
-                        editorFrame.refresh();
-                        editorFrame.camX = (float) (openLevelx.width / 2);
-                        editorFrame.camZ = 4.5F;
-                        editorFrame.camY = (float) (openLevelx.height / 2);
-                    } else {
-                        openLevelx = (Level) Game.fromJson(Level.class, level);
-                        openLevelx.init(Source.EDITOR);
-                        editorFrame.level = openLevelx;
-                        editorFrame.refresh();
-                        editorFrame.camX = (float) (openLevelx.width / 2);
-                        editorFrame.camZ = 4.5F;
-                        editorFrame.camY = (float) (openLevelx.height / 2);
-                    }
-                }
+                } else if (file.endsWith(".bin")) {
+                    Level openLevel = KryoSerializer.loadLevel(level);
 
+                    openLevel.init(Level.Source.EDITOR);
+
+                    editorFrame.level = openLevel;
+                    editorFrame.refresh();
+
+                    editorFrame.camX = (float) (openLevel.width / 2);
+                    editorFrame.camZ = 4.5F;
+                    editorFrame.camY = (float)(openLevel.height / 2);
+                } else {
+                    Level openLevel = Game.fromJson(Level.class, level);
+                    openLevel.init(Level.Source.EDITOR);
+
+                    editorFrame.level = openLevel;
+                    editorFrame.refresh();
+
+                    editorFrame.camX = (float)(openLevel.width / 2);
+                    editorFrame.camZ = 4.5F;
+                    editorFrame.camY = (float)(openLevel.height / 2);
+                }
                 editorFrame.history = new EditorHistory();
             }
+
         } catch (NullPointerException ex) {
-            Gdx.app.log("DelvEdit", "Selected null!");
-        } catch (Exception var8) {
-            Gdx.app.error("DelvEdit", var8.getMessage());
+            Gdx.app.log("DelvEdit", "Canceled file picker!");
+        } catch (Exception ex) {
+            Gdx.app.error("DelvEdit", ex.getMessage());
         }
     }
 }
