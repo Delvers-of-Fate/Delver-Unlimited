@@ -297,8 +297,8 @@ public class MainMenuScreen extends BaseScreen {
         } else {
             this.buttonTable.add().width(36.0F);
         }
-        this.buttonTable.add(this.quitButton).height(20.0F);
         this.buttonTable.add(this.optionsButton).height(20.0F);
+        this.buttonTable.add(this.quitButton).height(20.0F);
 
         this.buttonTable.pack();
 

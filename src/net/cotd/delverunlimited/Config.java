@@ -9,7 +9,7 @@ public class Config {
     public static int forceSave = 3;
 
     public static String OfflineVer = "1.7.0";
-    public static boolean isRelease = false;
+    public static boolean isRelease = true;
 
     public static int height = 0;
     public static int width = 0;
